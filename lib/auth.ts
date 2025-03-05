@@ -1,17 +1,36 @@
-import { createClient } from "@/utils/supabase/client";
+"use client";
 
-export async function getUserSession() {
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import type { User } from "@supabase/supabase-js";
+
+export function useUserSession() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("❌ Kullanıcı oturumu alınamadı:", error.message);
+      } else {
+        setUser(data.user);
+      }
+      setLoading(false);
+    };
 
-  if (error || !session) {
-    console.error("❌ Kullanıcı oturumu alınamadı:", error?.message);
-    return null;
-  }
+    getUser();
 
-  return session.user; // ✅ Kullanıcı bilgilerini döndürüyor
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  return { user, loading };
 }

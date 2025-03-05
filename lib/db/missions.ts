@@ -10,7 +10,14 @@ export async function createMission(userId: string, name: string, description: s
     .select()
     .single();
 
-  if (error) throw new Error("Mission oluşturulurken hata oluştu: " + error.message);
+  if (error) {
+    console.error("❌ Mission eklenirken hata oluştu:", error.message);
+    return null;
+  }
+
+  // ✅ Mission eklendikten sonra otomatik olarak günleri ekleyelim
+  await addMissionDays(data.id, userId, totalDays);
+
   return data;
 }
 
@@ -79,4 +86,21 @@ export async function getMissionById(missionId: string) {
   }
 
   return data;
+}
+
+export async function addMissionDays(missionId: string, userId: string, totalDays: number) {
+  const supabase = createClient();
+
+  const days = Array.from({ length: totalDays }, (_, i) => ({
+    mission_id: missionId,
+    user_id: userId,
+    day_number: i + 1,
+    status: "pending"
+  }));
+
+  const { error } = await supabase.from("mission_days").insert(days);
+
+  if (error) {
+    console.error("❌ Mission günleri eklenirken hata oluştu:", error.message);
+  }
 }
