@@ -1,8 +1,10 @@
 "use client";
 
-import {  MenuIcon } from "lucide-react";
+import { useUserSession } from "@/lib/auth"; // Kullanıcı bilgisini almak için
+import { createClient } from "@/utils/supabase/client"; // Çıkış yapmak için
+import { MenuIcon } from "lucide-react";
 import Link from "next/link";
-
+import Image from "next/image"; 
 import {
   Accordion,
   AccordionContent,
@@ -28,35 +30,33 @@ import {
 } from "@/components/ui/sheet";
 
 const Navbar5 = () => {
+  const { user } = useUserSession(); // Kullanıcıyı kontrol et
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut(); // Oturumu kapat
+    window.location.href = "/"; // Ana sayfaya yönlendir
+  };
+
   const features = [
     {
       title: "Dashboard",
-      description: "Overview of your activity",
+      description: "Missionlarını takip et",
+      href: "/dashboard",
+    },
+    {
+      title: "Analitikler",
+      description: "Performansını incele",
       href: "#",
     },
     {
-      title: "Analytics",
-      description: "Track your performance",
+      title: "Ayarlar",
+      description: "Kendine göre özelleştir",
       href: "#",
     },
     {
-      title: "Settings",
-      description: "Configure your preferences",
-      href: "#",
-    },
-    {
-      title: "Integrations",
-      description: "Connect with other tools",
-      href: "#",
-    },
-    {
-      title: "Storage",
-      description: "Manage your files",
-      href: "#",
-    },
-    {
-      title: "Support",
-      description: "Get help when needed",
+      title: "Destek",
+      description: "Yardıma ihtiyacın mı var?",
       href: "#",
     },
   ];
@@ -66,13 +66,15 @@ const Navbar5 = () => {
       <div className="container">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="https://shadcnblocks.com/images/block/block-1.svg" alt="logo" className="w-8" />
-            <span className="text-lg font-semibold">ProcesShark</span>
+            <Link href={"/"} className="cursor-pointer flex items-center gap-2">
+              <Image src="/favicon.png" alt="ProcesShark Logo" width={40} height={40}></Image>
+              <span className="text-lg font-semibold">ProcesShark</span>
+            </Link>
           </div>
           <NavigationMenu className="hidden lg:block">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Features</NavigationMenuTrigger>
+                <NavigationMenuTrigger>Özellikler</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[600px] grid-cols-2 p-3">
                     {features.map((feature, index) => (
@@ -94,10 +96,10 @@ const Navbar5 = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink
-                  href="#"
+                  href="/dashboard"
                   className={navigationMenuTriggerStyle()}
                 >
-                  Products
+                  Hedeflerim
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -105,92 +107,22 @@ const Navbar5 = () => {
                   href="#"
                   className={navigationMenuTriggerStyle()}
                 >
-                  Resources
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="#"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Contact
+                  İletişim
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
           <div className="hidden items-center gap-4 lg:flex">
-            <Button variant="outline">Sign in</Button>
-            <Link href="/login">
-            <Button>Start for free</Button>
-            </Link>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="icon">
-                <MenuIcon className="h-4 w-4" />
+            {user ? (
+              <Button onClick={handleLogout} className="cursor-pointer">
+                Çıkış Yap
               </Button>
-            </SheetTrigger>
-            <SheetContent side="top" className="max-h-screen overflow-scroll">
-              <SheetHeader>
-                <SheetTitle>
-                  <div className="flex items-center gap-4">
-                    <img
-                      src="https://shadcnblocks.com/images/block/block-1.svg"
-                      alt="logo"
-                      className="w-8"
-                    />
-                    <span className="text-lg font-semibold">
-                      Shadcnblocks.com
-                    </span>
-                  </div>
-                </SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col">
-                <Accordion type="single" collapsible className="mb-2 mt-4">
-                  <AccordionItem value="solutions" className="border-none">
-                    <AccordionTrigger className="hover:no-underline">
-                      Features
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="grid md:grid-cols-2">
-                        {features.map((feature, index) => (
-                          <a
-                            href={feature.href}
-                            key={index}
-                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
-                          >
-                            <div key={feature.title}>
-                              <p className="mb-1 font-semibold">
-                                {feature.title}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {feature.description}
-                              </p>
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-                <div className="flex flex-col gap-6">
-                  <a href="#" className="font-medium">
-                    Templates
-                  </a>
-                  <a href="#" className="font-medium">
-                    Blog
-                  </a>
-                  <a href="#" className="font-medium">
-                    Pricing
-                  </a>
-                </div>
-                <div className="mt-6 flex flex-col gap-4">
-                  <Button variant="outline">Sign in</Button>
-                  <Button>Start for free</Button>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+            ) : (
+              <Link href="/login">
+                <Button className="cursor-pointer">Giriş Yap</Button>
+              </Link>
+            )}
+          </div>
         </nav>
       </div>
     </section>

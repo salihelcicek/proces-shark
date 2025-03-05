@@ -16,11 +16,11 @@ interface Hero32Props {
 }
 
 const Hero32 = ({
-  heading = "Blocks Built With Shadcn & Tailwind",
-  description = "Fully decomposable components, all the images and background patterns are individual images or svgs that can be replaced.",
+  heading = "Adım Adım Hedeflerine Ulaş!",
+  description = "Hedeflerine ulaşmak için günlük adımlarını belirle, ilerlemeni kaydet ve süreçlerini yönet!",
   button = {
-    text: "Discover all components",
-    url: "https://www.shadcnblocks.com",
+    text: "Daha fazla bekleme, başla!",
+    url: "https://www.youtube.com/watch?v=j_hbewgd_d4",
   },
   integrations = [
     [
