@@ -73,11 +73,11 @@ const MissionDaysTable = ({ missionId }: { missionId: string }) => {
               <TableCell>{day.note || "Henüz not eklenmemiş"}</TableCell>
               <TableCell>
                 {day.status === "completed" ? (
-                  <Badge variant="default">Tamamlandı</Badge>
+                  <p>✅</p>
                 ) : day.status === "skipped" ? (
-                  <Badge variant="destructive">Atlandı</Badge>
+                  <p>❌</p>
                 ) : (
-                  <Badge variant="outline">Beklemede</Badge>
+                  <p>⏳</p>
                 )}
               </TableCell>
             </TableRow>

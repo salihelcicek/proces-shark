@@ -1,4 +1,9 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+
 
 interface Integration {
   id: string;
@@ -15,218 +20,39 @@ interface Hero32Props {
   integrations?: Integration[][];
 }
 
-const Hero32 = ({
-  heading = "Adım Adım Hedeflerine Ulaş!",
-  description = "Hedeflerine ulaşmak için günlük adımlarını belirle, ilerlemeni kaydet ve süreçlerini yönet!",
-  button = {
-    text: "Daha fazla bekleme, başla!",
-    url: "https://www.youtube.com/watch?v=j_hbewgd_d4",
-  },
-  integrations = [
-    [
-      {
-        id: "integration-1",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-1.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-2",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-2.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-3",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-3.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-4",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-4.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-5",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-5.svg"
-          />
-        ),
-      },
-    ],
-    [
-      {
-        id: "integration-6",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-6.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-7",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-1.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-8",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-2.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-9",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-3.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-10",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-4.svg"
-          />
-        ),
-      },
-    ],
-    [
-      {
-        id: "integration-11",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-5.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-12",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-6.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-13",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-1.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-14",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-2.svg"
-          />
-        ),
-      },
-      {
-        id: "integration-15",
-        icon: (
-          <img
-            alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-3.svg"
-          />
-        ),
-      },
-    ],
-  ],
-}: Hero32Props) => {
+const Hero32 = () => {
+  const router = useRouter();
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1400 600"
-          className="min-h-full min-w-full"
-        >
-          <defs>
-            <pattern
-              id="grid"
-              width="24"
-              height="24"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 24 0 L 0 0 0 24"
-                fill="none"
-                stroke="hsl(var(--muted))"
-                strokeWidth="1"
-                strokeOpacity={0.5}
-              />
-            </pattern>
-          </defs>
-          <rect width="1400" height="600" fill="url(#grid)" />
-        </svg>
-      </div>
-      <div className="relative">
-        <div className="absolute left-0 z-10 hidden h-full w-1/2 bg-[linear-gradient(to_right,var(--color-background)_85%,transparent_100%)] md:block"></div>
-        <div className="md:-space-x-26 container relative flex flex-col items-start md:flex-row md:items-center">
-          <div className="bg-background z-20 -mx-[calc(theme(container.padding))] w-[calc(100%+2*theme(container.padding))] shrink-0 px-[calc(theme(container.padding))] pt-32 md:w-1/2 md:bg-transparent md:pb-32">
-            <div className="flex flex-col items-start text-left">
-              <div className="max-w-sm">
-                <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
-                  {heading}
-                </h1>
-                <p className="text-muted-foreground">{description}</p>
-                <Button asChild size="lg" className="mt-10">
-                  <a href={button.url}>{button.text}</a>
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex flex-col gap-16 pb-8 pt-12 md:py-32">
-              {integrations.map((line, i) => (
-                <div key={i} className="flex gap-x-24 odd:-translate-x-24">
-                  {line.map((integration) => (
-                    <div
-                      key={integration.id}
-                      className="border-background bg-background size-24 rounded-xl border shadow-xl"
-                    >
-                      <div className="bg-muted/20 h-full w-full p-4">
-                        {integration.icon}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
+<section className="relative min-h-screen flex items-center justify-center bg-background dark:bg-gray-900 px-6 md:px-16">
+      {/* Ana container */}
+      <div className="container flex flex-col md:flex-row items-center justify-between gap-12">
+        
+        {/* Sol taraf: Başlık ve açıklama */}
+        <div className="max-w-lg text-center md:text-left">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight">
+            Adım Adım <br /> Hedeflerine Ulaş!
+          </h1>
+          <p className="mt-4 text-gray-700 dark:text-gray-300 text-lg">
+            Hedeflerine ulaşmak için günlük adımlarını belirle, ilerlemeni kaydet ve süreçlerini yönet!
+          </p>
+          <Button 
+            size="lg" 
+            className="mt-6 bg-black text-white dark:bg-white dark:text-black dark:hover:bg-gray-700 dark:hover:text-white"
+            onClick={() => router.push("/dashboard")} // ✅ Buraya yönlendirme eklendi!
+          >
+            Daha fazla bekleme, başla!
+          </Button>
+        </div>
+
+        {/* Sağ taraf: Logo veya görsel */}
+        <div className="flex justify-center md:justify-end">
+          <Image 
+            src="/favicon.png" 
+            alt="ProcesShark Logo" 
+            width={200} 
+            height={200} 
+            className="drop-shadow-lg dark:drop-shadow-xl dark:invert"
+          />
         </div>
       </div>
     </section>

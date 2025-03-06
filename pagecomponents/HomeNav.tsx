@@ -63,7 +63,7 @@ const Navbar5 = () => {
 
   return (
     <section className="py-4 px-4">
-      <div className="container border-b-2 border-black mx-auto">
+      <div className="container">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href={"/"} className="cursor-pointer flex items-center gap-2">

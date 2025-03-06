@@ -42,7 +42,7 @@ export default function MissionDetail({ missionId, user }) {
     if (!user?.id || selectedDay === null) return;
 
     await saveMissionNote(missionId, user.id, selectedDay, note);
-    toast.success("Not başarıyla kaydedildi! ✅");
+    toast.success("Not başarıyla kaydedildi!");
   };
 
   const handleStatusChange = async (dayNumber: number, newStatus: "pending" | "completed" | "skipped") => {
@@ -56,7 +56,7 @@ export default function MissionDetail({ missionId, user }) {
       )
     );
 
-    toast.success(`Gün ${dayNumber} durumu: ${newStatus === "completed" ? "Tamamlandı ✅" : newStatus === "skipped" ? "Atlandı ❌" : "Beklemede ⏳"}`);
+    toast(`Gün ${dayNumber} durumu: ${newStatus === "completed" ? "Tamamlandı ✅" : newStatus === "skipped" ? "Atlandı ❌" : "Beklemede ⏳"}`);
   };
 
   if (loading) return <p>Yükleniyor...</p>;
@@ -84,25 +84,25 @@ export default function MissionDetail({ missionId, user }) {
                 <ContextMenu key={i}>
                   <ContextMenuTrigger onClick={() => handleDayClick(i + 1)}>
                     <div
-                      className={`w-12 h-12 flex items-center justify-center rounded-md cursor-pointer transition-all duration-300 m-2
-                        ${day?.status === "completed" ? "bg-green-600 text-white hover:scale-110" : 
-                          day?.status === "skipped" ? "bg-red-600 text-white hover:scale-110" : 
-                          "bg-gray-200 hover:scale-110"}
+                      className={`w-12 h-12 flex items-center justify-center rounded-md cursor-pointer transition-all text-white duration-300 m-2
+                        ${day?.status === "completed" ? "bg-green-400 text-white hover:scale-110" : 
+                          day?.status === "skipped" ? "bg-red-400 text-white hover:scale-110" : 
+                          "bg-gray-200 hover:scale-110 dark:bg-gray-700"}
                         ${selectedDay === i + 1 ? "border-2 border-blue-500 shadow-md scale-110" : ""}
                       `}
                     >
                       {i + 1}
                     </div>
                   </ContextMenuTrigger>
-                  <ContextMenuContent className="bg-black text-white rounded-md shadow-md">
+                  <ContextMenuContent className="bg-black text-white rounded-md shadow-md ">
                     <ContextMenuItem onClick={() => handleStatusChange(i + 1, "pending")}>
-                      ⏳ Beklemede
+                       Beklemede
                     </ContextMenuItem>
                     <ContextMenuItem onClick={() => handleStatusChange(i + 1, "completed")}>
-                      ✅ Tamamlandı
+                       Tamamlandı
                     </ContextMenuItem>
                     <ContextMenuItem onClick={() => handleStatusChange(i + 1, "skipped")}>
-                      ❌ Atlandı
+                       Atlandı
                     </ContextMenuItem>
                   </ContextMenuContent>
                 </ContextMenu>
@@ -113,7 +113,7 @@ export default function MissionDetail({ missionId, user }) {
 
         {/* Not Paneli */}
         {selectedDay !== null && (
-          <div className="p-4 border rounded-md bg-white shadow-md">
+          <div className="p-4 border rounded-md bg-gray-100 shadow-md dark:bg-gray-800">
             <h2 className="text-lg font-semibold text-center">{selectedDay}. Gün Notu</h2>
             <textarea
               className="w-full p-2 border rounded-md mt-2"

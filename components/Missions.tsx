@@ -27,9 +27,9 @@ export default function Missions({ userId  }) {
           <CarouselContent className="flex space-x-4">
             {missions.map((mission) => (
               <CarouselItem key={mission.id} className="basis-1/3">
-                <Card className="cursor-pointer hover:shadow-lg hover:bg-slate-100 transition-all duration-300 ease-in-out" onClick={() => router.push(`/dashboard/mission/${mission.id}`)}>
+                <Card className="cursor-pointer hover:shadow-lg hover:bg-slate-100 transition-all duration-300 ease-in-out dark:hover:bg-gray-700" onClick={() => router.push(`/dashboard/mission/${mission.id}`)}>
                   <CardHeader>
-                    <CardTitle>{mission.name}</CardTitle>
+                    <CardTitle className="text-blue-400 font-extrabold">{mission.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p>{mission.description}</p>
