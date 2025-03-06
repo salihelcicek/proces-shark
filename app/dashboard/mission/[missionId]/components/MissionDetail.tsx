@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";
 import MissionProgress from "@/components/MissionProgress";
 import MissionDaysTable from "@/components/MissionsDayTable";
+
 export default function MissionDetail({ missionId, user }) {
   const [mission, setMission] = useState(null);
   const [days, setDays] = useState([]);
@@ -62,73 +63,79 @@ export default function MissionDetail({ missionId, user }) {
   if (!mission) return <p className="text-center text-red-500">Mission bulunamadı!</p>;
 
   return (
-    <div className=" flex gap-10 flex-row justify-between items-center align-center">
-        <MissionProgress missionId={mission.id}/>
-        <div className="mt-6">
-      <h1 className="text-3xl font-bold">{mission.name}</h1>
-      <p className="text-gray-600">{mission.description}</p>
-
-      {/* Günler */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Günlük Hedefler</h2>
-        <div className="grid grid-cols-7 gap-2 mt-4">
-  {Array.from({ length: mission.total_days }, (_, i) => {
-    const day = days.find((d) => d.day_number === i + 1);
-    return (
-      <ContextMenu key={i}>
-        <ContextMenuTrigger onClick={() => handleDayClick(i + 1)}>
-          <div
-            className={`w-12 h-12 flex items-center justify-center rounded-md cursor-pointer transition-all duration-300 m-2
-              ${day?.status === "completed" ? "bg-green-600 text-white hover:scale-110" : 
-                day?.status === "skipped" ? "bg-red-600 text-white hover:scale-110" : 
-                "bg-gray-200 hover:scale-110"}
-              ${selectedDay === i + 1 ? "border-2 border-blue-500 shadow-md scale-130" : ""}
-            `}
-          >
-            {i + 1}
-          </div>
-        </ContextMenuTrigger>
-        <ContextMenuContent className="bg-black text-white rounded-md shadow-md">
-          <ContextMenuItem onClick={() => handleStatusChange(i + 1, "pending")}>
-            ⏳ Beklemede
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => handleStatusChange(i + 1, "completed")}>
-            ✅ Tamamlandı
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => handleStatusChange(i + 1, "skipped")}>
-            ❌ Atlandı
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-    );
-  })}
-</div>
+    <div>
+      <h1 className="text-3xl font-bold text-center">{mission.name}</h1>
+        <p className="text-gray-600 text-center">{mission.description}</p>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 p-6 max-w-6xl mx-auto">
+      {/* 1. Bölüm - Progress Bar */}
+      <div className="flex flex-col items-center space-y-4 justify-center">
+        <MissionProgress missionId={mission.id} />
 
       </div>
 
-      {/* Not Paneli */}
-      {selectedDay !== null && (
-        <div className="mt-6 p-4 border rounded-md bg-white shadow-md">
-          <h2 className="text-lg font-semibold">{selectedDay}. Gün </h2>
-          <textarea
-            className="w-full p-2 border rounded-md mt-2"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Bugün hakkında bir not bırak..."
-          />
-          <button
-            className="mt-2 px-4 py-2 bg-black hover:bg-slate-700 text-white rounded-md"
-            onClick={handleSaveNote}
-          >
-            Kaydet
-          </button>
+      {/* 2. Bölüm - Günlük Hedefler ve Not Paneli */}
+      <div className="flex flex-col space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-center">Günlük Hedefler</h2>
+          <div className="flex flex-wrap gap-2 mt-4 justify-center">
+            {Array.from({ length: mission.total_days }, (_, i) => {
+              const day = days.find((d) => d.day_number === i + 1);
+              return (
+                <ContextMenu key={i}>
+                  <ContextMenuTrigger onClick={() => handleDayClick(i + 1)}>
+                    <div
+                      className={`w-12 h-12 flex items-center justify-center rounded-md cursor-pointer transition-all duration-300 m-2
+                        ${day?.status === "completed" ? "bg-green-600 text-white hover:scale-110" : 
+                          day?.status === "skipped" ? "bg-red-600 text-white hover:scale-110" : 
+                          "bg-gray-200 hover:scale-110"}
+                        ${selectedDay === i + 1 ? "border-2 border-blue-500 shadow-md scale-110" : ""}
+                      `}
+                    >
+                      {i + 1}
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="bg-black text-white rounded-md shadow-md">
+                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "pending")}>
+                      ⏳ Beklemede
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "completed")}>
+                      ✅ Tamamlandı
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "skipped")}>
+                      ❌ Atlandı
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              );
+            })}
+          </div>
         </div>
-      )}
 
-        
-    </div>
-    <MissionDaysTable missionId={mission.id} />
-    </div>
+        {/* Not Paneli */}
+        {selectedDay !== null && (
+          <div className="p-4 border rounded-md bg-white shadow-md">
+            <h2 className="text-lg font-semibold text-center">{selectedDay}. Gün Notu</h2>
+            <textarea
+              className="w-full p-2 border rounded-md mt-2"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Bugün hakkında bir not bırak..."
+            />
+            <button
+              className="mt-2 w-1/3 px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-md"
+              onClick={handleSaveNote}
+            >
+              Kaydet
+            </button>
+          </div>
+        )}
+      </div>
 
+      {/* 3. Bölüm - Günlük İlerleme Tablosu */}
+      <div>
+        <MissionDaysTable missionId={mission.id} />
+      </div>
+    </div>
+    </div>
   );
 }

@@ -61,11 +61,11 @@ export default function AddMissionModal({ userId }) {
       </DialogTrigger>
       
 
-            <DialogContent>
+            <DialogContent >
             <DialogTitle>Yeni Mission Ekle</DialogTitle> {/* ✅ Başlık eklendi, hata çözülüyor */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 ">
                 <div>
-                <Label>Mission Adı</Label>
+                <Label className="py-2">Mission Adı</Label>
                 <Input 
                     type="text" 
                     value={name} 
@@ -74,7 +74,7 @@ export default function AddMissionModal({ userId }) {
                 />
                 </div>
                 <div>
-                <Label>Açıklama</Label>
+                <Label className="py-2">Açıklama</Label>
                 <Textarea 
                     value={description} 
                     onChange={(e) => setDescription(e.target.value)}
@@ -82,7 +82,7 @@ export default function AddMissionModal({ userId }) {
                 />
                 </div>
                 <div>
-                <Label>Toplam Gün</Label>
+                <Label className="py-2">Toplam Gün</Label>
                 <Input 
                     type="number" 
                     value={totalDays} 

@@ -6,6 +6,7 @@ import { checkOrCreateUser } from "@/app/actionts";
 import { getUserMissions } from "@/lib/db/missions";
 import  AddMissionModal  from "@/components/AddMissionModal";
 import Missions from "@/components/Missions";
+import {Badge} from "@/components/ui/badge"
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -35,13 +36,14 @@ export default function Dashboard() {
   if (loading) return <p>Yükleniyor...</p>;
 
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h2>Dashboard</h2>
-      {user ? <p>Hoş geldin, {user.email}!</p> : <p>Giriş bilgisi alınamadı.</p>}
+    <div style={{ textAlign: "center", marginTop: "100px" }} className="flex flex-col justify-center items-center gap-5">
+      <h1 className="text-3xl text-center font-bold">Mission Dashboard</h1>
+      {user ? <Badge variant={"outline"} className="text-center text-xl font-bold">Hoş geldin, {user.email}! 🎉</Badge> : <Badge>Giriş bilgisi alınamadı.</Badge>}
+      <p className="hover:underline">Mission seç ve çalışmaya başla ! 😎</p>
 
-      <h3>Mission'lar</h3>
-      <AddMissionModal userId={user.id} />
+      
       <Missions userId={user.id} />
+      <AddMissionModal userId={user.id} />
     </div>
   );
 }
