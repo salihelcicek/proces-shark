@@ -1,54 +1,23 @@
 "use client";
 
 import { CircularProgress, Card, CardBody, CardFooter, Chip } from "@heroui/react";
-import { useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { useUserSession as useAuth } from "@/lib/auth";
+import { useState } from "react";
+import { useRealtimeUpdates } from "@/lib/realtime"; // ✅ Realtime Hook
 
 const MissionProgress = ({ missionId }: { missionId: string }) => {
-  const supabase = createClient();
-  const { user } = useAuth();
-  const [completedDays, setCompletedDays] = useState(0);
-  const [totalDays, setTotalDays] = useState(1);
+// ✅ Fetch mission_days in realtime using missionId instead of userId
+const missionDays = useRealtimeUpdates("mission_days", missionId, "mission_id");
 
-  useEffect(() => {
-    const fetchMissionProgress = async () => {
-      if (!user) return;
 
-      const { data: mission, error: missionError } = await supabase
-        .from("missions")
-        .select("total_days")
-        .eq("id", missionId)
-        .single();
+  // ✅ Get total days & completed days
+  const totalDays = missionDays.length || 1;
+  const completedDays = missionDays.filter((day) => day.status === "completed").length;
 
-      if (missionError) {
-        console.error("❌ Mission verisi alınırken hata oluştu:", missionError.message);
-        return;
-      }
-
-      setTotalDays(mission?.total_days || 1);
-
-      const { data: completed, error: completedError } = await supabase
-        .from("mission_days")
-        .select("id")
-        .eq("mission_id", missionId)
-        .eq("status", "completed");
-
-      if (completedError) {
-        console.error("❌ Tamamlanan günler alınırken hata oluştu:", completedError.message);
-        return;
-      }
-
-      setCompletedDays(completed.length);
-    };
-
-    fetchMissionProgress();
-  }, [supabase, user, missionId]);
-
+  // ✅ Calculate progress percentage
   const progress = Math.round((completedDays / totalDays) * 100);
 
   return (
-    <Card className="w-[440px] h-[340px]  bg-transparent">
+    <Card className="w-[440px] h-[340px] bg-transparent">
       <CardBody className="justify-center items-center pb-0">
         <CircularProgress
           classNames={{

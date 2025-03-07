@@ -8,6 +8,7 @@ import AddMissionModal from "@/components/AddMissionModal";
 import Missions from "@/components/Missions";
 import { Badge } from "@/components/ui/badge";
 
+
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);

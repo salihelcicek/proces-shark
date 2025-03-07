@@ -1,59 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { useUserSession as useAuth } from "@/lib/auth";
+import { useRealtimeUpdates } from "@/lib/realtime"; // ✅ Realtime Hook
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 const MissionDaysTable = ({ missionId }: { missionId: string }) => {
-  const supabase = createClient();
-  const { user } = useAuth();
-  const [days, setDays] = useState<
-    { day_number: number; status: string | null; note: string | null }[]
-  >([]);
+  // ✅ Fetch mission_days & mission_notes in realtime
+  const missionDays = useRealtimeUpdates("mission_days", missionId, "mission_id");
+  const missionNotes = useRealtimeUpdates("mission_notes", missionId, "mission_id");
 
-  useEffect(() => {
-    const fetchMissionDays = async () => {
-      if (!user) return;
-
-      // Mission Days tablosundan tüm günleri çek
-      const { data: missionDays, error: missionDaysError } = await supabase
-        .from("mission_days")
-        .select("day_number, status")
-        .eq("mission_id", missionId)
-        .order("day_number", { ascending: true });
-
-      if (missionDaysError) {
-        console.error("❌ Günler alınırken hata oluştu:", missionDaysError.message);
-        return;
-      }
-
-      // Mission Notes tablosundan ilgili günlerin notlarını çek
-      const { data: missionNotes, error: missionNotesError } = await supabase
-        .from("mission_notes")
-        .select("day_number, note")
-        .eq("mission_id", missionId);
-
-      if (missionNotesError) {
-        console.error("❌ Notlar alınırken hata oluştu:", missionNotesError.message);
-        return;
-      }
-
-      // Mission günlerini notlarla birleştir
-      const mergedData = missionDays.map((day) => {
-        const noteEntry = missionNotes.find((note) => note.day_number === day.day_number);
-        return {
-          ...day,
-          note: noteEntry ? noteEntry.note : null, // Eğer not varsa ekle, yoksa null
-        };
-      });
-
-      setDays(mergedData);
-    };
-
-    fetchMissionDays();
-  }, [supabase, user, missionId]);
+  // ✅ Merge mission days with their corresponding notes
+  const days = missionDays.map((day) => ({
+    ...day,
+    note: missionNotes.find((note) => note.day_number === day.day_number)?.note || "Henüz not eklenmemiş",
+  }));
 
   return (
     <div className="mt-3 m-5">
@@ -70,7 +29,7 @@ const MissionDaysTable = ({ missionId }: { missionId: string }) => {
           {days.map((day) => (
             <TableRow key={day.day_number}>
               <TableCell>Gün {day.day_number}</TableCell>
-              <TableCell>{day.note || "Henüz not eklenmemiş"}</TableCell>
+              <TableCell>{day.note}</TableCell>
               <TableCell>
                 {day.status === "completed" ? (
                   <p>✅</p>
