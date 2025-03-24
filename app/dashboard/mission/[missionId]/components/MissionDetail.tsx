@@ -8,13 +8,15 @@ import { toast } from "sonner";
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";
 import MissionProgress from "@/components/MissionProgress";
 import MissionDaysTable from "@/components/MissionsDayTable";
-
+import AIAdvice from "@/components/AIAdvice";
 export default function MissionDetail({ missionId, user }) {
   const [mission, setMission] = useState(null);
   const [days, setDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,6 +138,15 @@ export default function MissionDetail({ missionId, user }) {
         <MissionDaysTable missionId={mission.id} />
       </div>
     </div>
+
+    <AIAdvice mission={{
+          name: mission.name,
+          description: mission.description,
+          total_days: mission.total_days,
+          completed_days: days.filter(d => d.status === "completed").length,
+          skipped_days: days.filter(d => d.status === "skipped").length
+        }} />
+
     </div>
   );
 }
