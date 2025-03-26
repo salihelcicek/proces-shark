@@ -46,10 +46,9 @@ const Sidebar = () => {
 
         {/* Navigasyon */}
         <nav className="flex flex-col gap-4">
-          <Link href="/dashboard" className="text-lg font-medium hover:text-blue-600">📌 Dashboard</Link>
-          <Link href="/mission/active" className="text-lg font-medium hover:text-blue-600">🚀 Aktif Mission</Link>
-          <Link href="/mission/days" className="text-lg font-medium hover:text-blue-600">🗓 Tüm Günler</Link>
-          <Link href="/mission/analytics" className="text-lg font-medium hover:text-blue-600">📊 Analizler</Link>
+          <Link href="/" className="text-lg font-small hover:text-blue-600">Ana Sayfa</Link>
+          <Link href="/dashboard" className="text-lg font-small hover:text-blue-600">Missions Dashboard</Link>
+          <Link href="/guideline" className="text-lg font-small hover:text-blue-600">Kılavuz</Link>
         </nav>
 
 

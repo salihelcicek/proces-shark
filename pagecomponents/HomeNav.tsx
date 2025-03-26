@@ -45,20 +45,16 @@ const Navbar5 = () => {
       href: "/dashboard",
     },
     {
-      title: "Analitikler",
-      description: "Performansını incele",
+      title: "AI-Shark 🆕",
+      description: "Shark ile konuş!",
       href: "#",
     },
     {
-      title: "Ayarlar",
-      description: "Kendine göre özelleştir",
-      href: "#",
-    },
-    {
-      title: "Destek",
-      description: "Yardıma ihtiyacın mı var?",
-      href: "#",
-    },
+      title: "Rehber",
+      description: "Nasıl kullanılır?, Sıkça sorulan sorular, İpuçları",
+      href: "/guideline",
+    }
+    
   ];
 
   return (
@@ -94,14 +90,7 @@ const Navbar5 = () => {
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/dashboard"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Hedeflerim
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+            
               <NavigationMenuItem>
                 <NavigationMenuLink
                   href="#"
