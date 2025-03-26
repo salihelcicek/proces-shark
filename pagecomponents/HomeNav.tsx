@@ -99,6 +99,14 @@ const Navbar5 = () => {
                   İletişim
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  href="/pricing"
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Fiyatlandırma
+                </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
           <div className="hidden items-center gap-4 lg:flex">
