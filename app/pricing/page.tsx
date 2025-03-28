@@ -11,6 +11,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge";
 import TrustedByMarquee from "@/components/TrustedByMarquee";
 
+const exchangeRates = {
+  USD: 1,
+  EUR: 0.91,
+  TRY: 32.5,
+};
+
+const currencySymbols = {
+  USD: "$",
+  EUR: "€",
+  TRY: "₺",
+};
+
+
 const plans = [
   {
     name: "Starter",
@@ -52,6 +65,7 @@ const plans = [
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [currency, setCurrency] = useState<"USD" | "EUR" | "TRY">("USD");
 
   return (
     <TooltipProvider>
@@ -80,14 +94,26 @@ export default function PricingPage() {
           </ToggleGroup>
         </div>
         {/* Currency Toggle (Visual Placeholder) */}
-<div className="text-center mt-5 mb-5  ">
+        <div className="text-center mt-5 mb-5">
   <div className="inline-flex gap-4 border p-2 rounded-lg">
-    <button className="text-sm px-3 py-1 rounded bg-sky-500 text-white">USD</button>
-    <button className="text-sm px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-black dark:text-white">EUR</button>
-    <button className="text-sm px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-black dark:text-white">TRY</button>
+    {["USD", "EUR", "TRY"].map((curr) => (
+      <button
+        key={curr}
+        onClick={() => setCurrency(curr as "USD" | "EUR" | "TRY")}
+        className={clsx(
+          "text-sm px-3 py-1 rounded transition",
+          currency === curr
+            ? "bg-sky-500 text-white"
+            : "bg-gray-200 dark:bg-gray-700 text-black dark:text-white"
+        )}
+      >
+        {curr}
+      </button>
+    ))}
   </div>
 </div>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto ">
           {plans.map((plan, idx) => (
             <motion.div
               key={idx}
@@ -98,7 +124,7 @@ export default function PricingPage() {
               <Card
                 className={clsx(
                   "text-left p-6 border shadow-sm transition-all relative",
-                  plan.highlight && "border-sky-500 ring-2 ring-sky-500"
+                  plan.highlight && "border-sky-200 ring-1 border-2 ring-sky-200 hover:border-sky-500"
                 )}
               >
                 <div className="flex items-center gap-2 mb-1">
@@ -112,12 +138,15 @@ export default function PricingPage() {
 
                 <div className="text-4xl font-bold text-foreground mb-6">
                   {typeof plan.price[billing] === "number"
-                    ? `$${plan.price[billing]}`
+                    ? `${currencySymbols[currency]}${(
+                        plan.price[billing] * exchangeRates[currency]
+                      ).toFixed(0)}`
                     : plan.price[billing]}
                   <span className="text-base text-muted-foreground font-medium">
                     {typeof plan.price[billing] === "number" && "/ay"}
                   </span>
                 </div>
+
 
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feat, i) => (

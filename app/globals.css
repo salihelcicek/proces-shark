@@ -18,6 +18,20 @@
   animation: marquee 30s linear infinite;
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 3.5s ease-in-out infinite;
+}
+
+
 
 :root {
   --background: oklch(1 0 0);

@@ -93,10 +93,10 @@ const Navbar5 = () => {
             
               <NavigationMenuItem>
                 <NavigationMenuLink
-                  href="#"
+                  href="/about-blog"
                   className={navigationMenuTriggerStyle()}
                 >
-                  İletişim
+                  Blog
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
