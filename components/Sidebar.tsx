@@ -47,7 +47,9 @@ const Sidebar = () => {
         {/* Navigasyon */}
         <nav className="flex flex-col gap-4">
           <Link href="/" className="text-lg font-small hover:text-blue-600">Ana Sayfa</Link>
+          <Link href="/profile" className="text-lg font-small hover:text-blue-600">Profil</Link>
           <Link href="/dashboard" className="text-lg font-small hover:text-blue-600">Missions Dashboard</Link>
+          
           <Link href="/guideline" className="text-lg font-small hover:text-blue-600">Kılavuz</Link>
           <Link href="/about-blog" className="text-lg font-small hover:text-blue-600">Blog</Link>
         </nav>
