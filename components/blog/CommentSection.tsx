@@ -11,6 +11,7 @@ import {
 } from "@/lib/db/comments";
 import { toast } from "sonner";
 import { Trash2, Pencil } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import { enrichCommentsWithUsers } from "@/lib/helpers/enrichComments";
 
@@ -146,7 +147,7 @@ function CommentCard({ comment, user, onEdit, onDelete, onReply, isReply = false
             className="rounded-full"
           />
         )}
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground font-semibold">
           {comment.user?.email || "Bilinmeyen Kullanıcı"}
         </span>
       </div>

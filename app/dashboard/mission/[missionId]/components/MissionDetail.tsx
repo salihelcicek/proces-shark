@@ -9,14 +9,24 @@ import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } 
 import MissionProgress from "@/components/MissionProgress";
 import MissionDaysTable from "@/components/MissionsDayTable";
 import AIAdvice from "@/components/AIAdvice";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 export default function MissionDetail({ missionId, user }) {
   const [mission, setMission] = useState(null);
   const [days, setDays] = useState([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const MAX_WORDS = 50;
+  const wordCount = note.trim().split(/\s+/).filter(Boolean).length;
+  const wordsRemaining = MAX_WORDS - wordCount;
+  const completedDays = days.filter((d) => d.status === "completed").length;
+  const skippedDays = days.filter((d) => d.status === "skipped").length;
+  const pendingDays = days.filter((d) => d.status === "pending" || !d.status).length;
   
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,126 +37,174 @@ export default function MissionDetail({ missionId, user }) {
       setDays(missionDays || []);
       setLoading(false);
     };
-
     fetchData();
   }, [missionId, user]);
 
   const handleDayClick = async (dayNumber: number) => {
     if (!user?.id) return;
     setSelectedDay(dayNumber);
-
-    // ✅ Seçilen günün mevcut notunu getir
     const existingNote = await getMissionNote(missionId, user.id, dayNumber);
     setNote(existingNote?.note || "");
   };
 
   const handleSaveNote = async () => {
     if (!user?.id || selectedDay === null) return;
-
     await saveMissionNote(missionId, user.id, selectedDay, note);
     toast.success("Not başarıyla kaydedildi!");
   };
 
   const handleStatusChange = async (dayNumber: number, newStatus: "pending" | "completed" | "skipped") => {
     if (!user?.id) return;
-
     await updateMissionDayStatus(missionId, user.id, dayNumber, newStatus);
-
     setDays((prev) =>
       prev.map((day) =>
         day.day_number === dayNumber ? { ...day, status: newStatus } : day
       )
     );
-
-    toast(`Gün ${dayNumber} durumu: ${newStatus === "completed" ? "Tamamlandı ✅" : newStatus === "skipped" ? "Atlandı ❌" : "Beklemede ⏳"}`);
   };
 
-  if (loading) return <p>Yükleniyor...</p>;
+  if (loading) return <p className="p-6 text-center">Yükleniyor...</p>;
   if (!mission) return <p className="text-center text-red-500">Mission bulunamadı!</p>;
 
+
+  const totalDays = mission.total_days;
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center">{mission.name}</h1>
-        <p className="text-gray-600 text-center">{mission.description}</p>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 p-6 max-w-6xl mx-auto">
-      {/* 1. Bölüm - Progress Bar */}
-      <div className="flex flex-col items-center space-y-4 justify-center">
-        <MissionProgress missionId={mission.id} />
+    <TooltipProvider>
+      <div className="max-w-6xl mx-auto py-10 px-4">
+        {/* Başlık */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-foreground mb-2">{mission.name}</h1>
+          <p className="text-muted-foreground max-w-xl mx-auto">{mission.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+          <div className="bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-white p-4 rounded-md text-center">
+            <p className="text-2xl font-bold">{totalDays}</p>
+            <p className="text-sm">Toplam Gün</p>
+          </div>
 
-      </div>
+          <div className="bg-green-100 dark:bg-green-700 text-green-800 dark:text-white p-4 rounded-md text-center">
+            <p className="text-2xl font-bold">{completedDays}</p>
+            <p className="text-sm">Tamamlandı</p>
+          </div>
 
-      {/* 2. Bölüm - Günlük Hedefler ve Not Paneli */}
-      <div className="flex flex-col space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-center">Günlük Hedefler</h2>
-          <div className="flex flex-wrap gap-2 mt-4 justify-center">
-            {Array.from({ length: mission.total_days }, (_, i) => {
-              const day = days.find((d) => d.day_number === i + 1);
-              return (
-                <ContextMenu key={i}>
-                  <ContextMenuTrigger onClick={() => handleDayClick(i + 1)}>
-                    <div
-                      className={`w-12 h-12 flex items-center justify-center rounded-md cursor-pointer transition-all text-white duration-300 m-2
-                        ${day?.status === "completed" ? "bg-green-400 text-white hover:scale-110" : 
-                          day?.status === "skipped" ? "bg-red-400 text-white hover:scale-110" : 
-                          "bg-gray-200 hover:scale-110 dark:bg-gray-700"}
-                        ${selectedDay === i + 1 ? "border-2 border-blue-500 shadow-md scale-110" : ""}
-                      `}
-                    >
-                      {i + 1}
-                    </div>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="bg-black text-white rounded-md shadow-md ">
-                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "pending")}>
-                       Beklemede
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "completed")}>
-                       Tamamlandı
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => handleStatusChange(i + 1, "skipped")}>
-                       Atlandı
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              );
-            })}
+          <div className="bg-red-100 dark:bg-red-700 text-red-800 dark:text-white p-4 rounded-md text-center">
+            <p className="text-2xl font-bold">{skippedDays}</p>
+            <p className="text-sm">Atlandı</p>
+          </div>
+
+          <div className="bg-yellow-100 dark:bg-yellow-700 text-yellow-800 dark:text-white p-4 rounded-md text-center">
+            <p className="text-2xl font-bold">{pendingDays}</p>
+            <p className="text-sm">Beklemede</p>
+          </div>
+        </div>
+        </div>
+
+        {/* Gösterge kutusu (legend) */}
+        <div className="flex justify-center gap-6 mb-6 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-green-500" /> Tamamlandı</div>
+          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-red-500" /> Atlandı</div>
+          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-gray-300 dark:bg-gray-600" /> Beklemede</div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Progress */}
+          <div className="flex flex-col items-center">
+            <MissionProgress missionId={mission.id} />
+          </div>
+
+          {/* Günler */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 text-center">🗓️ Günlük Hedefler</h2>
+            <div className="flex flex-wrap justify-center gap-2">
+              {Array.from({ length: mission.total_days }, (_, i) => {
+                const day = days.find((d) => d.day_number === i + 1);
+                const statusColor = day?.status === "completed"
+                  ? "bg-green-500 text-white"
+                  : day?.status === "skipped"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-300 dark:bg-gray-700 text-black dark:text-white";
+
+                const tooltipText = day?.status === "completed"
+                  ? "Tamamlandı"
+                  : day?.status === "skipped"
+                    ? "Atlandı"
+                    : "Beklemede";
+
+                return (
+                  <ContextMenu key={i}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <ContextMenuTrigger onClick={() => handleDayClick(i + 1)}>
+                          <div
+                            className={`w-10 h-10 flex items-center justify-center text-sm rounded-full cursor-pointer transition-transform duration-200 hover:scale-110
+                              ${statusColor} ${selectedDay === i + 1 ? "ring-2 ring-sky-500 scale-110" : ""}
+                            `}
+                          >
+                            {i + 1}
+                          </div>
+                        </ContextMenuTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>{tooltipText}</TooltipContent>
+                    </Tooltip>
+                    <ContextMenuContent className="bg-white dark:bg-gray-800 shadow-xl border rounded">
+                      <ContextMenuItem onClick={() => handleStatusChange(i + 1, "pending")}>
+                        Beklemede
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => handleStatusChange(i + 1, "completed")}>
+                        Tamamlandı
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => handleStatusChange(i + 1, "skipped")}>
+                        Atlandı
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                );
+              })}
+            </div>
+
+            {/* Not Paneli */}
+            {selectedDay !== null && (
+              <div className="mt-6 bg-muted p-4 rounded-lg shadow-md">
+                <h3 className="font-semibold text-lg mb-2 text-center">{selectedDay}. Gün Notu</h3>
+                <Textarea
+                  value={note}
+                  onChange={(e) => {
+                    const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                    if (words.length <= MAX_WORDS) {
+                      setNote(e.target.value);
+                    }
+                  }}
+                  placeholder="Bugün hakkında bir şeyler yaz..."
+                />
+                <p className={`text-xs text-right mt-1 ${wordsRemaining < 0 ? "text-red-500" : "text-muted-foreground"}`}>
+                  {wordsRemaining} kelime kaldı
+                </p>
+                <Button onClick={handleSaveNote} className="mt-3 w-full">
+                  Notu Kaydet
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Günlük Liste */}
+          <div className="col-span-1 lg:col-span-2">
+            <MissionDaysTable missionId={mission.id} />
           </div>
         </div>
 
-        {/* Not Paneli */}
-        {selectedDay !== null && (
-          <div className="p-4 border rounded-md bg-gray-100 shadow-md dark:bg-gray-800">
-            <h2 className="text-lg font-semibold text-center">{selectedDay}. Gün Notu</h2>
-            <textarea
-              className="w-full p-2 border rounded-md mt-2"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Bugün hakkında bir not bırak..."
-            />
-            <button
-              className="mt-2 w-1/3 px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-md"
-              onClick={handleSaveNote}
-            >
-              Kaydet
-            </button>
-          </div>
-        )}
+
+
+        {/* AI Tavsiye */}
+        <div className="mt-16">
+          <AIAdvice mission={{
+            name: mission.name,
+            description: mission.description,
+            total_days: mission.total_days,
+            completed_days: days.filter(d => d.status === "completed").length,
+            skipped_days: days.filter(d => d.status === "skipped").length,
+          }} />
+        </div>
       </div>
-
-      {/* 3. Bölüm - Günlük İlerleme Tablosu */}
-      <div>
-        <MissionDaysTable missionId={mission.id} />
-      </div>
-    </div>
-
-    <AIAdvice mission={{
-          name: mission.name,
-          description: mission.description,
-          total_days: mission.total_days,
-          completed_days: days.filter(d => d.status === "completed").length,
-          skipped_days: days.filter(d => d.status === "skipped").length
-        }} />
-
-    </div>
+    </TooltipProvider>
   );
 }

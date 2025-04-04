@@ -1,16 +1,36 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRealtimeUpdates } from "@/lib/realtime";
+import { useMissionsRealtime } from "@/lib/realtime3";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 export default function Missions({ userId }) {
   const router = useRouter();
-  
-  // ✅ Use Realtime Hook to automatically update missions
-  const missions = useRealtimeUpdates("missions", userId);
+  const supabase = createClient();
 
+  // ✅ Use Realtime Hook to automatically update missions
+  
+
+
+  const handleDelete = async (missionId: string) => {
+    const confirmed = confirm("Bu görevi silmek istediğine emin misin?");
+    if (!confirmed) return;
+
+    const { error } = await supabase.from("missions").delete().eq("id", missionId);
+    if (error) {
+      toast.error("Görev silinirken bir hata oluştu.");
+    } else {
+      toast.success("Görev başarıyla silindi!");
+    }
+
+
+    
+  };
+  const missions = useMissionsRealtime(userId);
   return (
     <div className="w-full max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-center mb-4">Mission List</h2>
@@ -20,9 +40,20 @@ export default function Missions({ userId }) {
             {missions.map((mission) => (
               <CarouselItem key={mission.id} className="basis-1/3">
                 <Card
-                  className="cursor-pointer hover:shadow-lg hover:bg-slate-100 transition-all duration-300 ease-in-out dark:hover:bg-gray-700"
+                  className="relative cursor-pointer hover:shadow-lg hover:bg-slate-100 transition-all duration-300 ease-in-out dark:hover:bg-gray-700"
                   onClick={() => router.push(`/dashboard/mission/${mission.id}`)}
                 >
+                  {/* 🗑️ Sil Butonu */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // kart açılmasın
+                      handleDelete(mission.id);
+                    }}
+                    className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 text-red-500"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+
                   <CardHeader>
                     <CardTitle className="text-blue-400 font-extrabold">{mission.name}</CardTitle>
                   </CardHeader>

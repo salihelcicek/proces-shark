@@ -94,6 +94,7 @@ export default function AddMissionModal({ userId }) {
                 <Button type="submit" disabled={loading}>
                 {loading ? "Ekleniyor..." : "Kaydet"}
                 </Button>
+                <p>Mission oluşturulduktan sonra değiştirilemez !</p>
             </form>
             </DialogContent>
 

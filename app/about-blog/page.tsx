@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import BlogFilters from "@/components/blog/BlogFilters";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState([]);
@@ -59,6 +60,19 @@ export default function BlogListPage() {
 
         {/* Filtre */}
         <BlogFilters onFilterChange={setFilters} />
+
+        <Badge className="mt-2 bg-slate-100 text-slate-800 hover:bg-slate-200">
+          <Link href="/profile" className="">
+            Profil
+          </Link>
+        </Badge>
+        <br />
+        <Badge className="mt-2 bg-slate-100 text-slate-800 hover:bg-slate-200">
+          <Link href="/about-blog/add-blog" className="">
+            Yeni blog oluştur
+          </Link>
+        </Badge>
+        
 
         {/* Blog Listesi veya Boş Mesaj */}
         {filteredBlogs.length === 0 ? (

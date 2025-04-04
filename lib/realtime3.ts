@@ -1,28 +1,24 @@
+// lib/realtime3.ts
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 
 const supabase = createClient();
 
-export function useRealtimeUpdates(
-  table: string,
-  filterId: string,
-  filterColumn: "user_id" | "mission_id" = "user_id",
-  uniqueKey: string = "default"
-) {
+export function useMissionsRealtime(userId: string) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (!filterId) return;
+    if (!userId) return;
 
     const fetchData = async () => {
       const { data, error } = await supabase
-        .from(table)
+        .from("missions")
         .select("*")
-        .eq(filterColumn, filterId);
+        .eq("user_id", userId);
 
       if (error) {
-        console.error(`❌ Error fetching ${table}:`, error.message);
+        console.error("❌ missions fetch error:", error.message);
       } else {
         setData(data);
       }
@@ -30,24 +26,24 @@ export function useRealtimeUpdates(
 
     fetchData();
 
-    const channelName = `${table}_${filterId}_${uniqueKey}_realtime`; // 🔑 benzersiz kanal adı
+    const channelName = `missions_${userId}_realtime`;
     const channel = supabase
       .channel(channelName)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table, filter: `${filterColumn}=eq.${filterId}` },
-        async () => {
+        { event: "*", schema: "public", table: "missions" }, // filter yok!
+        (payload) => {
+          console.log("🔔 Mission event triggered!", payload);
           fetchData();
         }
       )
+      
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [table, filterId, filterColumn, uniqueKey]);
+  }, [userId]);
 
   return data;
 }
-
-
