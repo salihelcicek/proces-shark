@@ -1,18 +1,15 @@
 'use server'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { createUrl } from '@/utils/environment'
 
 const signInWith = provider => async () => {
   const supabase = await createClient()
 
-  // @
-  const auth_callback_url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback` // eslint-disable-line
-
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
+      redirectTo: createUrl('/dashboard'),
     },
   })
 
