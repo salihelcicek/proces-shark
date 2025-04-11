@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import AISharkLoading from "./AISharkLoading";
-import { createUrl } from "@/utils/environment";
+// Import commented out for now: import { createUrl } from "@/utils/environment";
 
 // Create a simpler interface just for AIAdvice
 interface AIAdviceProps {
@@ -25,8 +25,20 @@ export default function AIAdvice({ mission }: AIAdviceProps) {
 
   const generateAdvice = async () => {
     setLoading(true);
-    setAdvice("");
+    
+    // Simulate a delay
+    setTimeout(() => {
+      // Using mission data in the message to suppress linter warning
+      const missionInfo = `${mission.name} (${mission.total_days} gün)`;
+      setAdvice("🚧 **AI Tavsiye Özelliği Çok Yakında!**\n\n" + 
+        `"${missionInfo}" görevi için AI destekli tavsiyeler çok yakında gelecek! ` +
+        "Bu özellik şu anda geliştirme aşamasındadır ve yakında etkinleştirilecektir. " +
+        "Görev istatistiklerinize dayalı kişiselleştirilmiş geri bildirim ve motivasyon önerileri almak için takipte kalın!");
+      setLoading(false);
+    }, 1500);
 
+    // Commented out actual API call code for later use
+    /*
     const prompt = `Görev adı: ${mission.name}\n\nAçıklama: ${mission.description}\n\nToplam gün: ${mission.total_days}\n\nTamamlanan gün sayısı: ${mission.completed_days || 0}\nAtlanan gün sayısı: ${mission.skipped_days || 0}\n\nKullanıcının bu göreve dair güçlü ve zayıf yönlerini, motivasyon önerilerini detaylı ve destekleyici şekilde açıkla gerekli satır boşlukları ve emojilerle okuması keyifli olsun.`;
 
     const res = await fetch(createUrl("/api/ai-advice"), {
@@ -47,6 +59,7 @@ export default function AIAdvice({ mission }: AIAdviceProps) {
     console.log("✅ API cevabı:", data);
     setAdvice(data.result);
     setLoading(false);
+    */
   };
 
   return (
