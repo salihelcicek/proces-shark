@@ -12,10 +12,11 @@ import { toast } from "sonner";
 import BlogFilters from "@/components/blog/BlogFilters";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { Blog, User } from "@/types/types";
 
 export default function BlogListPage() {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [user, setUser] = useState<User | null>(null);
   const [filters, setFilters] = useState({ search: "", author: "" });
 
   const filteredBlogs = blogs.filter((blog) => {
@@ -25,7 +26,7 @@ export default function BlogListPage() {
   });
 
   const handleDelete = async (blogId: string) => {
-    const confirmDelete = confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
+    const confirmDelete = window.confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
     if (!confirmDelete) return;
 
     const res = await deleteBlog(blogId);

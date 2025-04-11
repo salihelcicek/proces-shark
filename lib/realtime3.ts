@@ -1,10 +1,12 @@
 // lib/realtime3.ts
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+
 const supabase = createClient();
 
-export function useMissionsRealtime(userId: string) {
-  const [data, setData] = useState([]);
+// We use a more specific type as default - a minimal record type with common mission fields
+export function useMissionsRealtime<T = { id: string; [key: string]: unknown }>(userId: string): T[] {
+  const [data, setData] = useState<T[]>([]);
 
   useEffect(() => {
     if (!userId) return;

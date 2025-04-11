@@ -18,10 +18,12 @@ export default function EditBlogPage() {
 
   useEffect(() => {
     async function fetchBlog() {
-      const blog = await getBlogById(id);
-      if (blog) {
-        setTitle(blog.title);
-        setContent(blog.content);
+      if (typeof id === 'string') {
+        const blog = await getBlogById(id);
+        if (blog) {
+          setTitle(blog.title);
+          setContent(blog.content);
+        }
       }
     }
     fetchBlog();
@@ -33,11 +35,16 @@ export default function EditBlogPage() {
       return;
     }
 
+    if (typeof id !== 'string') {
+      toast.error("Geçersiz blog ID'si!");
+      return;
+    }
+
     const { success, error } = await updateBlog(id, title, content);
 
     if (success) {
       toast.success("Blog başarıyla güncellendi!");
-      router.push("/about-blog");
+      router.push("/about-blog/" + id);
     } else {
       toast.error(error || "Güncelleme başarısız.");
     }

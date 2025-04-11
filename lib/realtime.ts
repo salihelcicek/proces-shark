@@ -3,13 +3,14 @@ import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
 
-export function useRealtimeUpdates(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useRealtimeUpdates<T = any>( // ✅ Tip generic ama default any
   table: string,
   filterId: string,
   filterColumn: "user_id" | "mission_id" = "user_id",
   uniqueKey: string = "default"
-) {
-  const [data, setData] = useState([]);
+): T[] {
+  const [data, setData] = useState<T[]>([]); // ✅ Tipli data array
 
   useEffect(() => {
     if (!filterId) return;
@@ -23,13 +24,13 @@ export function useRealtimeUpdates(
       if (error) {
         console.error(`❌ Error fetching ${table}:`, error.message);
       } else {
-        setData(data);
+        setData(data as T[]); // ✅ data'yı doğru tipe cast ettik
       }
     };
 
     fetchData();
 
-    const channelName = `${table}_${filterId}_${uniqueKey}_realtime`; // 🔑 benzersiz kanal adı
+    const channelName = `${table}_${filterId}_${uniqueKey}_realtime`;
     const channel = supabase
       .channel(channelName)
       .on(
@@ -48,5 +49,3 @@ export function useRealtimeUpdates(
 
   return data;
 }
-
-

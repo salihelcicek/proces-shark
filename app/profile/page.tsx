@@ -7,43 +7,46 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import type { User, Blog, Mission } from "@/types/types";
 
 export default function UserProfilePage() {
-  const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({ missionCount: 0, blogCount: 0, totalLikes: 0 });
-  const [blogs, setBlogs] = useState([]);
-  const [missions, setMissions] = useState([]);
-
+  const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState({
+    missionCount: 0,
+    blogCount: 0,
+    totalLikes: 0,
+  });
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [missions, setMissions] = useState<Mission[]>([]);
   const [showMoreBlogs, setShowMoreBlogs] = useState(false);
   const [showMoreMissions, setShowMoreMissions] = useState(false);
 
-  const supabase = createClient();
-
   useEffect(() => {
     const fetchData = async () => {
+      const supabase = createClient();
       const user = await checkOrCreateUser();
       setUser(user);
 
       if (!user) return;
 
-      const [missions, blogsRes, likes] = await Promise.all([
+      const [missionsRes, blogsRes, likes] = await Promise.all([
         supabase.from("missions").select("*").eq("user_id", user.id),
         supabase.from("blogs").select("*").eq("user_id", user.id),
         supabase.from("likes").select("*").eq("user_id", user.id).eq("type", "like"),
       ]);
 
       setStats({
-        missionCount: missions.data?.length || 0,
+        missionCount: missionsRes.data?.length || 0,
         blogCount: blogsRes.data?.length || 0,
         totalLikes: likes.data?.length || 0,
       });
 
       setBlogs(blogsRes.data || []);
-      setMissions(missions.data || []);
+      setMissions(missionsRes.data || []);
     };
 
     fetchData();
-  }, [supabase]);
+  }, []);
 
   if (!user) return <div className="p-6">Yükleniyor...</div>;
 
@@ -59,7 +62,7 @@ export default function UserProfilePage() {
 
       <div className="flex items-center gap-4 mb-8">
         <Image
-          src={user.user_metadata.avatar_url}
+          src={user.user_metadata?.avatar_url ?? "/default.png"}
           alt="Profil"
           width={64}
           height={64}

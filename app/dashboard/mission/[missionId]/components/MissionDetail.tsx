@@ -5,17 +5,33 @@ import { getMissionById } from "@/lib/db/missions";
 import { getMissionDays, updateMissionDayStatus } from "@/lib/db/missionDays";
 import { getMissionNote, saveMissionNote } from "@/lib/db/missionNote";
 import { toast } from "sonner";
-import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from "@/components/ui/context-menu";
 import MissionProgress from "@/components/MissionProgress";
 import MissionDaysTable from "@/components/MissionsDayTable";
 import AIAdvice from "@/components/AIAdvice";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import type { Mission, MissionDay } from "@/types/types";
 
-export default function MissionDetail({ missionId, user }) {
-  const [mission, setMission] = useState(null);
-  const [days, setDays] = useState([]);
+interface MissionDetailProps {
+  missionId: string;
+  user: { id: string };
+}
+
+export default function MissionDetail({ missionId, user }: MissionDetailProps) {
+  const [mission, setMission] = useState<Mission | null>(null);
+  const [days, setDays] = useState<MissionDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,9 +40,9 @@ export default function MissionDetail({ missionId, user }) {
   const wordsRemaining = MAX_WORDS - wordCount;
   const completedDays = days.filter((d) => d.status === "completed").length;
   const skippedDays = days.filter((d) => d.status === "skipped").length;
-  const pendingDays = days.filter((d) => d.status === "pending" || !d.status).length;
-  
-
+  const pendingDays = days.filter(
+    (d) => d.status === "pending" || !d.status
+  ).length;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,7 +69,10 @@ export default function MissionDetail({ missionId, user }) {
     toast.success("Not başarıyla kaydedildi!");
   };
 
-  const handleStatusChange = async (dayNumber: number, newStatus: "pending" | "completed" | "skipped") => {
+  const handleStatusChange = async (
+    dayNumber: number,
+    newStatus: "pending" | "completed" | "skipped"
+  ) => {
     if (!user?.id) return;
     await updateMissionDayStatus(missionId, user.id, dayNumber, newStatus);
     setDays((prev) =>
@@ -66,44 +85,45 @@ export default function MissionDetail({ missionId, user }) {
   if (loading) return <p className="p-6 text-center">Yükleniyor...</p>;
   if (!mission) return <p className="text-center text-red-500">Mission bulunamadı!</p>;
 
-
   const totalDays = mission.total_days;
 
   return (
     <TooltipProvider>
       <div className="max-w-6xl mx-auto py-10 px-4">
-        {/* Başlık */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-foreground mb-2">{mission.name}</h1>
           <p className="text-muted-foreground max-w-xl mx-auto">{mission.description}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-          <div className="bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-white p-4 rounded-md text-center">
-            <p className="text-2xl font-bold">{totalDays}</p>
-            <p className="text-sm">Toplam Gün</p>
-          </div>
-
-          <div className="bg-green-100 dark:bg-green-700 text-green-800 dark:text-white p-4 rounded-md text-center">
-            <p className="text-2xl font-bold">{completedDays}</p>
-            <p className="text-sm">Tamamlandı</p>
-          </div>
-
-          <div className="bg-red-100 dark:bg-red-700 text-red-800 dark:text-white p-4 rounded-md text-center">
-            <p className="text-2xl font-bold">{skippedDays}</p>
-            <p className="text-sm">Atlandı</p>
-          </div>
-
-          <div className="bg-yellow-100 dark:bg-yellow-700 text-yellow-800 dark:text-white p-4 rounded-md text-center">
-            <p className="text-2xl font-bold">{pendingDays}</p>
-            <p className="text-sm">Beklemede</p>
+            <div className="bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-white p-4 rounded-md text-center">
+              <p className="text-2xl font-bold">{totalDays}</p>
+              <p className="text-sm">Toplam Gün</p>
+            </div>
+            <div className="bg-green-100 dark:bg-green-700 text-green-800 dark:text-white p-4 rounded-md text-center">
+              <p className="text-2xl font-bold">{completedDays}</p>
+              <p className="text-sm">Tamamlandı</p>
+            </div>
+            <div className="bg-red-100 dark:bg-red-700 text-red-800 dark:text-white p-4 rounded-md text-center">
+              <p className="text-2xl font-bold">{skippedDays}</p>
+              <p className="text-sm">Atlandı</p>
+            </div>
+            <div className="bg-yellow-100 dark:bg-yellow-700 text-yellow-800 dark:text-white p-4 rounded-md text-center">
+              <p className="text-2xl font-bold">{pendingDays}</p>
+              <p className="text-sm">Beklemede</p>
+            </div>
           </div>
         </div>
-        </div>
 
-        {/* Gösterge kutusu (legend) */}
+        {/* Legend */}
         <div className="flex justify-center gap-6 mb-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-green-500" /> Tamamlandı</div>
-          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-red-500" /> Atlandı</div>
-          <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-gray-300 dark:bg-gray-600" /> Beklemede</div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-green-500" /> Tamamlandı
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-red-500" /> Atlandı
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-gray-300 dark:bg-gray-600" /> Beklemede
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -112,21 +132,23 @@ export default function MissionDetail({ missionId, user }) {
             <MissionProgress missionId={mission.id} />
           </div>
 
-          {/* Günler */}
+          {/* Günler ve Notlar */}
           <div>
             <h2 className="text-xl font-semibold mb-4 text-center">🗓️ Günlük Hedefler</h2>
             <div className="flex flex-wrap justify-center gap-2">
               {Array.from({ length: mission.total_days }, (_, i) => {
                 const day = days.find((d) => d.day_number === i + 1);
-                const statusColor = day?.status === "completed"
-                  ? "bg-green-500 text-white"
-                  : day?.status === "skipped"
+                const statusColor =
+                  day?.status === "completed"
+                    ? "bg-green-500 text-white"
+                    : day?.status === "skipped"
                     ? "bg-red-500 text-white"
                     : "bg-gray-300 dark:bg-gray-700 text-black dark:text-white";
 
-                const tooltipText = day?.status === "completed"
-                  ? "Tamamlandı"
-                  : day?.status === "skipped"
+                const tooltipText =
+                  day?.status === "completed"
+                    ? "Tamamlandı"
+                    : day?.status === "skipped"
                     ? "Atlandı"
                     : "Beklemede";
 
@@ -162,7 +184,6 @@ export default function MissionDetail({ missionId, user }) {
               })}
             </div>
 
-            {/* Not Paneli */}
             {selectedDay !== null && (
               <div className="mt-6 bg-muted p-4 rounded-lg shadow-md">
                 <h3 className="font-semibold text-lg mb-2 text-center">{selectedDay}. Gün Notu</h3>
@@ -176,7 +197,11 @@ export default function MissionDetail({ missionId, user }) {
                   }}
                   placeholder="Bugün hakkında bir şeyler yaz..."
                 />
-                <p className={`text-xs text-right mt-1 ${wordsRemaining < 0 ? "text-red-500" : "text-muted-foreground"}`}>
+                <p
+                  className={`text-xs text-right mt-1 ${
+                    wordsRemaining < 0 ? "text-red-500" : "text-muted-foreground"
+                  }`}
+                >
                   {wordsRemaining} kelime kaldı
                 </p>
                 <Button onClick={handleSaveNote} className="mt-3 w-full">
@@ -192,17 +217,17 @@ export default function MissionDetail({ missionId, user }) {
           </div>
         </div>
 
-
-
         {/* AI Tavsiye */}
         <div className="mt-16">
-          <AIAdvice mission={{
-            name: mission.name,
-            description: mission.description,
-            total_days: mission.total_days,
-            completed_days: days.filter(d => d.status === "completed").length,
-            skipped_days: days.filter(d => d.status === "skipped").length,
-          }} />
+          <AIAdvice
+            mission={{
+              name: mission.name,
+              description: mission.description,
+              total_days: mission.total_days,
+              completed_days: completedDays,
+              skipped_days: skippedDays,
+            }}
+          />
         </div>
       </div>
     </TooltipProvider>

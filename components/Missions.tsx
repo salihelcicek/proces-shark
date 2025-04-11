@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
+import type { Mission } from "@/types/types";
 
-export default function Missions({ userId }) {
+export default function Missions({ userId }: { userId: string }) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -17,7 +18,7 @@ export default function Missions({ userId }) {
 
 
   const handleDelete = async (missionId: string) => {
-    const confirmed = confirm("Bu görevi silmek istediğine emin misin?");
+    const confirmed = window.confirm("Bu görevi silmek istediğine emin misin?");
     if (!confirmed) return;
 
     const { error } = await supabase.from("missions").delete().eq("id", missionId);
@@ -30,7 +31,7 @@ export default function Missions({ userId }) {
 
     
   };
-  const missions = useMissionsRealtime(userId);
+  const missions = useMissionsRealtime(userId) as Mission[];
   return (
     <div className="w-full max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-center mb-4">Mission List</h2>

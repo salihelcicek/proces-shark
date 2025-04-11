@@ -6,10 +6,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 
-export default function BlogFilters({ onFilterChange }) {
+interface Author {
+  id: string;
+  email: string;
+}
+
+interface FilterChangeProps {
+  search: string;
+  author: string;
+}
+
+export default function BlogFilters({ 
+  onFilterChange 
+}: { 
+  onFilterChange: (filters: FilterChangeProps) => void 
+}) {
   const [search, setSearch] = useState("");
   const [selectedAuthor, setSelectedAuthor] = useState("");
-  const [authors, setAuthors] = useState([]);
+  const [authors, setAuthors] = useState<Author[]>([]);
 
   useEffect(() => {
     const fetchAuthors = async () => {

@@ -10,7 +10,7 @@ export async function checkOrCreateUser() {
   if (!session?.session) return null;
 
   const userId = session.session.user.id;
-  const email = session.session.user.email;
+  const email = session.session.user.email || '';
   const profileImage = session.session.user.user_metadata?.avatar_url || null;
 
   await saveUserToDB(userId, email, profileImage);

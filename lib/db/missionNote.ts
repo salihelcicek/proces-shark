@@ -26,7 +26,7 @@ export async function saveMissionNote(missionId: string, userId: string, dayNumb
 
   const { data, error } = await supabase
     .from("mission_notes")
-    .upsert([{ mission_id: missionId, user_id: userId, day_number: dayNumber, note }], { onConflict: ["mission_id", "user_id", "day_number"] });
+    .upsert([{ mission_id: missionId, user_id: userId, day_number: dayNumber, note }], { onConflict: "mission_id,user_id,day_number" });
 
   if (error) {
     console.error("❌ Not kaydedilirken hata oluştu:", error.message);

@@ -2,15 +2,9 @@
 
 import { useUserSession } from "@/lib/auth"; // Kullanıcı bilgisini almak için
 import { createClient } from "@/utils/supabase/client"; // Çıkış yapmak için
-import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image"; 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -21,13 +15,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 
 const Navbar5 = () => {
   const { user } = useUserSession(); // Kullanıcıyı kontrol et

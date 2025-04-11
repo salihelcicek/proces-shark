@@ -1,11 +1,19 @@
 // lib/helpers/enrichComments.ts
 
 import { createClient } from "@/utils/supabase/client";
-import { Comment, User } from "@/types/types"; // Add type imports
+import { Comment } from "@/types/types";
+
+// Define a simplified user type for the enriched comments
+interface CommentUser {
+  id?: string;
+  email: string;
+  profile_image: string | null;
+}
 
 const supabase = createClient();
 
-export async function enrichCommentsWithUsers(comments: Comment[]) {
+// Update return type annotation
+export async function enrichCommentsWithUsers(comments: Comment[]): Promise<Array<Comment & { user: CommentUser }>> {
   if (!comments.length) return [];
   
   const userIds = [...new Set(comments.map((c) => c.user_id))];
@@ -14,7 +22,13 @@ export async function enrichCommentsWithUsers(comments: Comment[]) {
     .select("id, email, profile_image")
     .in("id", userIds);
 
-  const userMap = Object.fromEntries((users || []).map((u: User) => [u.id, u]));
+  interface DbUser {
+    id: string;
+    email: string;
+    profile_image: string | null;
+  }
+
+  const userMap = Object.fromEntries((users || []).map((u: DbUser) => [u.id, u]));
 
   return comments.map((comment) => ({
     ...comment,

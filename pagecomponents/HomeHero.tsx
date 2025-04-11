@@ -10,6 +10,7 @@ interface Integration {
   icon: React.ReactNode;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Hero32Props {
   heading?: string;
   description?: string;

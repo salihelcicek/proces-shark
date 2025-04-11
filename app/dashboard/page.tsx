@@ -7,12 +7,17 @@ import { getUserMissions } from "@/lib/db/missions";
 import AddMissionModal from "@/components/AddMissionModal";
 import Missions from "@/components/Missions";
 import { Badge } from "@/components/ui/badge";
+import { User } from "@/types/types";
+import type { Mission } from "@/types/types";
+
+// ✅ eslint-disable: unused değişken uyarısı için (eğer sadece setMissions kullanılmıyorsa)
 
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [missions, setMissions] = useState([]);
+  const [user, setUser] = useState<User | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [missions, setMissions] = useState<Mission[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -26,15 +31,33 @@ export default function Dashboard() {
       setUser(userData);
 
       const userMissions = await getUserMissions(userData.id);
-      console.log("✅ Mission Verileri:", userMissions);
-      setMissions(userMissions);
+
+      // ✅ Tip uyumu için dönüştürme
+      const formattedMissions: Mission[] = userMissions.map((mission: {
+        id: string;
+        name: string;
+        description: string;
+        total_days: number;
+        created_at: string;
+        status?: string;
+        updated_at?: string;
+      }) => ({
+        id: mission.id,
+        user_id: userData.id,
+        name: mission.name,
+        description: mission.description,
+        total_days: mission.total_days,
+        status: mission.status ?? "active",
+        created_at: mission.created_at,
+        updated_at: mission.updated_at ?? new Date().toISOString(),
+      }));
+
+      setMissions(formattedMissions);
       setLoading(false);
     };
 
     fetchUserData();
   }, [router]);
-
-  console.log(missions);
 
   if (loading)
     return (
@@ -56,7 +79,7 @@ export default function Dashboard() {
       {/* Kullanıcı Bilgisi */}
       {user ? (
         <Badge className="text-xl font-semibold bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 px-4 rounded-lg">
-          Hoş geldin, {user.email}! 🎉
+          Hoş geldin, {user.email ?? "Kullanıcı"}! 🎉
         </Badge>
       ) : (
         <Badge className="bg-red-500 text-white">Giriş bilgisi alınamadı.</Badge>
@@ -69,8 +92,12 @@ export default function Dashboard() {
 
       {/* Mission Listesi ve Mission Ekleme */}
       <div className="w-full max-w-4xl space-y-6">
-        <Missions userId={user.id} />
-        <AddMissionModal userId={user.id} />
+        {user && (
+          <>
+            <Missions userId={user.id} />
+            <AddMissionModal userId={user.id} />
+          </>
+        )}
       </div>
     </div>
   );

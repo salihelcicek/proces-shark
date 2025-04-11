@@ -7,7 +7,18 @@ import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import AISharkLoading from "./AISharkLoading";
 
-export default function AIAdvice({ mission }) {
+// Create a simpler interface just for AIAdvice
+interface AIAdviceProps {
+  mission: {
+    name: string;
+    description: string;
+    total_days: number;
+    completed_days?: number;
+    skipped_days?: number;
+  };
+}
+
+export default function AIAdvice({ mission }: AIAdviceProps) {
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState("");
 
@@ -15,7 +26,7 @@ export default function AIAdvice({ mission }) {
     setLoading(true);
     setAdvice("");
 
-    const prompt = `Görev adı: ${mission.name}\n\nAçıklama: ${mission.description}\n\nToplam gün: ${mission.total_days}\n\nTamamlanan gün sayısı: ${mission.completed_days}\nAtlanan gün sayısı: ${mission.skipped_days}\n\nKullanıcının bu göreve dair güçlü ve zayıf yönlerini, motivasyon önerilerini detaylı ve destekleyici şekilde açıkla gerekli satır boşlukları ve emojilerle okuması keyifli olsun.`;
+    const prompt = `Görev adı: ${mission.name}\n\nAçıklama: ${mission.description}\n\nToplam gün: ${mission.total_days}\n\nTamamlanan gün sayısı: ${mission.completed_days || 0}\nAtlanan gün sayısı: ${mission.skipped_days || 0}\n\nKullanıcının bu göreve dair güçlü ve zayıf yönlerini, motivasyon önerilerini detaylı ve destekleyici şekilde açıkla gerekli satır boşlukları ve emojilerle okuması keyifli olsun.`;
 
     const res = await fetch("/api/ai-advice", {
       method: "POST",

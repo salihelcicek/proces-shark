@@ -13,20 +13,53 @@ import { toast } from "sonner";
 import { Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { enrichCommentsWithUsers } from "@/lib/helpers/enrichComments";
+import type { Comment } from "@/types/types";
 
-export default function CommentSection({ blogId, user }) {
+// Simplified user type for comments display
+interface CommentUser {
+  email: string;
+  profile_image: string | null;
+}
+
+// Combined type for comments with user data
+interface EnrichedComment extends Comment {
+  user?: CommentUser;
+}
+
+// Minimal type for auth user with just the properties we need
+interface AuthUser {
+  id: string;
+  email?: string;
+}
+
+interface CommentSectionProps {
+  blogId: string;
+  user: AuthUser;
+}
+
+interface CommentCardProps {
+  comment: EnrichedComment;
+  user: AuthUser;
+  onEdit: (id: string, text: string) => void;
+  onDelete: (id: string) => Promise<void>;
+  onReply?: (id: string) => void;
+  isReply?: boolean;
+}
+
+export default function CommentSection({ blogId, user }: CommentSectionProps) {
   const [commentText, setCommentText] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [replyTo, setReplyTo] = useState(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [comments, setComments] = useState<EnrichedComment[]>([]);
+  const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  const textareaRef = useRef(null); // ✅ Burada tanımla
+  const textareaRef = useRef<HTMLTextAreaElement>(null); // ✅ Typed ref
 
-  const liveComments = useRealtimeUpdates("comments", blogId, "blog_id");
+  const liveComments = useRealtimeUpdates<Comment>("comments", blogId, "blog_id");
 
   useEffect(() => {
     async function enrich() {
-      const enriched = await enrichCommentsWithUsers(liveComments);
+      // Cast from generic type to Comment[] to satisfy type safety
+      const enriched = await enrichCommentsWithUsers(liveComments as Comment[]);
       setComments(enriched);
     }
     enrich();
@@ -48,22 +81,22 @@ export default function CommentSection({ blogId, user }) {
     setReplyTo(null);
   };
 
-  const handleEdit = (id, text) => {
+  const handleEdit = (id: string, text: string) => {
     setEditingId(id);
     setCommentText(text);
-    textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); // ⬅️ scroll ekledik
+    textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
   
 
-  const handleDelete = async (id) => {
-    if (confirm("Yorumu silmek istediğine emin misin?")) {
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Yorumu silmek istediğine emin misin?")) {
       await deleteComment(id);
       toast.success("Yorum silindi.");
     }
   };
 
   const rootComments = comments.filter((c) => !c.parent_id);
-  const replies = (parentId) =>
+  const replies = (parentId: string) =>
     comments.filter((c) => c.parent_id === parentId);
 
   return (
@@ -78,7 +111,7 @@ export default function CommentSection({ blogId, user }) {
               user={user}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              onReply={(id) => {
+              onReply={(id: string) => {
                 setReplyTo(id);
                 textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
               }}
@@ -92,6 +125,7 @@ export default function CommentSection({ blogId, user }) {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   isReply
+                  onReply={undefined}
                 />
               ))}
             </div>
@@ -129,7 +163,7 @@ export default function CommentSection({ blogId, user }) {
   );
 }
 
-function CommentCard({ comment, user, onEdit, onDelete, onReply, isReply = false }) {
+function CommentCard({ comment, user, onEdit, onDelete, onReply, isReply = false }: CommentCardProps) {
   return (
     <div
       className={`border p-4 rounded-md bg-muted/30 relative ${

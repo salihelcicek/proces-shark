@@ -10,9 +10,8 @@ const MissionProgress = ({ missionId }: { missionId: string }) => {
   const missionDays = useRealtimeUpdates("mission_days", missionId, "mission_id");
   const [prevProgress, setPrevProgress] = useState(0);
   const confettiFiredRef = useRef(false); // confetti tekrar tekrar fırlamasın
-
   const totalDays = missionDays.length || 1;
-  const completedDays = missionDays.filter((day) => day.status === "completed").length;
+  const completedDays = missionDays.filter((day: { status: string }) => day.status === "completed").length;
   const progress = Math.round((completedDays / totalDays) * 100);
 
   useEffect(() => {

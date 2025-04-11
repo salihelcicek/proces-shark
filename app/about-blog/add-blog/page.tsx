@@ -28,7 +28,7 @@ export default function AddBlogPage() {
     const { error } = await supabase.from("blogs").insert({
       title,
       content,
-      user_id: user.id,
+      user_id: user?.id,
     });
 
     if (error) {

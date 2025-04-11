@@ -9,7 +9,7 @@ import { createMission } from "@/lib/db/missions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function AddMissionModal({ userId }) {
+export default function AddMissionModal({ userId }: { userId: string }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [totalDays, setTotalDays] = useState("");
@@ -19,7 +19,7 @@ export default function AddMissionModal({ userId }) {
   
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     console.log("Error: ", error); // ✅ Hata kontrolü için log ekledik

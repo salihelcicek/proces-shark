@@ -11,21 +11,27 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import type { Blog, User } from "@/types/types";
 
 export default function BlogDetailPage() {
   const { id } = useParams();
   const blogId = Array.isArray(id) ? id[0] : id;
 
-  const [user, setUser] = useState(null);
-  const [blog, setBlog] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [blog, setBlog] = useState<Blog | null>(null);
 
   const router = useRouter();
 
   const handleDelete = async () => {
-    const confirmDelete = confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
+    const confirmDelete = window.confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
     if (!confirmDelete) return;
 
-    const res = await deleteBlog(blog?.id);
+    if (!blog?.id) {
+      toast.error("Blog ID bulunamadı.");
+      return;
+    }
+
+    const res = await deleteBlog(blog.id);
     if (res?.success) {
       toast.success("Blog başarıyla silindi!");
       router.push("/about-blog");
@@ -36,7 +42,13 @@ export default function BlogDetailPage() {
 
   const fetchData = useCallback(async () => {
     const userData = await checkOrCreateUser();
+    if (!userData) return;
     setUser(userData);
+
+    if (!blogId) {
+      toast.error("Blog ID bulunamadı.");
+      return;
+    }
 
     const blogData = await getBlogById(blogId);
     setBlog(blogData);
@@ -48,7 +60,7 @@ export default function BlogDetailPage() {
 
   const handleLike = async () => {
     if (!user) return toast.error("Lütfen giriş yapınız.");
-    const res = await likeBlog(blog.id, user.id);
+    const res = await likeBlog(blog!.id, user.id);
     if (res?.success) {
       toast.success("Blog beğenildi!");
       fetchData(); // like sonrası güncelle
@@ -57,7 +69,7 @@ export default function BlogDetailPage() {
 
   const handleDislike = async () => {
     if (!user) return toast.error("Lütfen giriş yapınız.");
-    await dislikeBlog(blog.id, user.id);
+    await dislikeBlog(blog!.id, user.id);
     toast.success("Beğenilmedi!");
     fetchData(); // dislike sonrası güncelle
   };
@@ -112,7 +124,7 @@ export default function BlogDetailPage() {
       </div>
 
       {/* Yorumlar */}
-      {user && <CommentSection blogId={blogId} user={user} />}
+      {user && blogId && <CommentSection blogId={blogId} user={user} />}
     </div>
   );
 }
