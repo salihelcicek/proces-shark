@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import AISharkLoading from "./AISharkLoading";
+import { createUrl } from "@/utils/environment";
 
 // Create a simpler interface just for AIAdvice
 interface AIAdviceProps {
@@ -28,7 +29,7 @@ export default function AIAdvice({ mission }: AIAdviceProps) {
 
     const prompt = `Görev adı: ${mission.name}\n\nAçıklama: ${mission.description}\n\nToplam gün: ${mission.total_days}\n\nTamamlanan gün sayısı: ${mission.completed_days || 0}\nAtlanan gün sayısı: ${mission.skipped_days || 0}\n\nKullanıcının bu göreve dair güçlü ve zayıf yönlerini, motivasyon önerilerini detaylı ve destekleyici şekilde açıkla gerekli satır boşlukları ve emojilerle okuması keyifli olsun.`;
 
-    const res = await fetch("/api/ai-advice", {
+    const res = await fetch(createUrl("/api/ai-advice"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),

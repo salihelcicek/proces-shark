@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProceShark
 
-## Getting Started
+A mission tracking and blogging application with AI-powered insights.
 
-First, run the development server:
+## Features
+
+- User authentication with Supabase
+- Mission tracking with daily updates
+- Blog posting and commenting
+- AI-powered insights for mission progress
+- Real-time updates via Supabase realtime
+
+## Development Setup
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/proces-shark.git
+cd proces-shark
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Environment Variables**
+
+Copy the example environment file and update with your own values:
+
+```bash
+cp .env.example .env.local
+```
+
+Required environment variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anon/public key
+- `DEEPSEEK_API_KEY`: Your DeepSeek API key for AI functionality
+
+4. **Run the development server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Push your code to GitHub**
 
-## Learn More
+2. **Connect your repository to Vercel**
 
-To learn more about Next.js, take a look at the following resources:
+   - Go to [Vercel](https://vercel.com) and sign up/log in
+   - Click "New Project" and import your GitHub repository
+   - Configure your project (add environment variables from `.env.example`)
+   - Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Environment Variables on Vercel**
+   - Add all the required environment variables in Vercel's project settings
+   - Ensure `NEXT_PUBLIC_APP_URL` is set to your Vercel deployment URL
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+- `/app`: Next.js app router pages and API routes
+- `/components`: Reusable React components
+- `/lib`: Utility functions and business logic
+- `/types`: TypeScript type definitions
+- `/utils`: Helper utilities (URL handling, Supabase clients)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Technologies Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 14
+- TypeScript
+- Supabase (Auth, Database, Realtime)
+- Tailwind CSS
+- DeepSeek AI API
+- Framer Motion

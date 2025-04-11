@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import deepseek from "@/lib/ai";
 
 export async function POST(req: NextRequest) {
-  const { prompt } = await req.json();
+  try {
+    const { prompt } = await req.json();
 
-  const response = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-    },
-    body: JSON.stringify({
+    const response = await deepseek.createChatCompletion({
       model: "deepseek-chat",
       temperature: 0.7,
       top_p: 1,
-      stream: false,
       max_tokens: 1000,
       messages: [
         {
@@ -25,14 +20,18 @@ export async function POST(req: NextRequest) {
           content: prompt,
         },
       ],
-    }),
-  });
+    });
 
-  const data = await response.json();
+    const result = response.choices?.[0]?.message?.content;
+    console.log("✅ AI Prompt:", prompt);
+    console.log("✅ AI Response:", result);
 
-  const result = data.choices?.[0]?.message?.content;
-  console.log(prompt)
-  console.log("✅ Deepseek API yanıtı:", data);
-
-  return NextResponse.json({ result: result || "AI yanıtı alınamadı." });
+    return NextResponse.json({ result: result || "AI yanıtı alınamadı." });
+  } catch (error: unknown) {
+    console.error("❌ AI API Error:", error instanceof Error ? error.message : error);
+    return NextResponse.json(
+      { error: "AI servisi şu anda kullanılamıyor." },
+      { status: 500 }
+    );
+  }
 }
