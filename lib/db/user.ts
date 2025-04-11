@@ -11,7 +11,7 @@ export async function saveUserToDB(userId: string, email: string, profileImage: 
     .single();
 
   if (existingUser) {
-    console.log("✅ Kullanıcı zaten kayıtlı:", existingUser.id);
+    console.log("✅ Kullanıcı zaten kayıtlı:",checkError,":", existingUser.id);
     return;
   }
 

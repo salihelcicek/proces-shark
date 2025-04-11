@@ -18,7 +18,7 @@ export async function likeBlog(blogId: string, userId: string) {
     console.error("Like eklenemedi:", error.message);
     return { error: error.message };
   }
-
+  console.log("Like eklendi:", data);
   return { success: true };
 }
 
@@ -38,6 +38,6 @@ export async function dislikeBlog(blogId: string, userId: string) {
     console.error("Dislike işlemi başarısız:", error.message);
     return { error: error.message };
   }
-
+  console.log("Dislike eklendi:", data);
   return { success: true };
 }

@@ -11,7 +11,6 @@ import {
 } from "@/lib/db/comments";
 import { toast } from "sonner";
 import { Trash2, Pencil } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { enrichCommentsWithUsers } from "@/lib/helpers/enrichComments";
 

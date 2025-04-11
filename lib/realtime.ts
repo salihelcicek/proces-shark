@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { toast } from "sonner";
 
 const supabase = createClient();
 

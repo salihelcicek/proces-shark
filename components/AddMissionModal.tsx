@@ -22,6 +22,7 @@ export default function AddMissionModal({ userId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    console.log("Error: ", error); // ✅ Hata kontrolü için log ekledik
 
     if (!name.trim() || !description.trim() || !totalDays) {
       setError("Lütfen tüm alanları doldurun.");

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { motion } from "framer-motion";
 import AISharkLoading from "./AISharkLoading";
@@ -40,12 +39,12 @@ export default function AIAdvice({ mission }) {
 
   return (
     <Card className="p-6 mt-6 text-center w-full max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-sky-500">🎯 AI-Shark'dan geri bildirim al </h2>
+      <h2 className="text-2xl font-bold mb-4 text-sky-500">🎯 AI-Shark Geri Bildirim Al </h2>
       {loading ? (
   <AISharkLoading />
 ) : (
   <Button onClick={generateAdvice} className="w-fit mx-auto">
-    AIShark'dan tavsiye al
+    AIShark Tavsiye al
   </Button>
 )}
 

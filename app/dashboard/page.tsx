@@ -8,7 +8,6 @@ import AddMissionModal from "@/components/AddMissionModal";
 import Missions from "@/components/Missions";
 import { Badge } from "@/components/ui/badge";
 
-
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -27,13 +26,15 @@ export default function Dashboard() {
       setUser(userData);
 
       const userMissions = await getUserMissions(userData.id);
-      console.log("✅ Mission Verileri:", userMissions); // Log ekledik
+      console.log("✅ Mission Verileri:", userMissions);
       setMissions(userMissions);
       setLoading(false);
     };
 
     fetchUserData();
-  }, []);
+  }, [router]);
+
+  console.log(missions);
 
   if (loading)
     return (
@@ -51,7 +52,6 @@ export default function Dashboard() {
         p-4 rounded-lg shadow-lg">
         Mission Dashboard 🦈
       </h1>
-
 
       {/* Kullanıcı Bilgisi */}
       {user ? (

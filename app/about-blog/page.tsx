@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { checkOrCreateUser } from "../actionts";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import BlogFilters from "@/components/blog/BlogFilters";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +17,6 @@ export default function BlogListPage() {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [filters, setFilters] = useState({ search: "", author: "" });
-  const router = useRouter();
 
   const filteredBlogs = blogs.filter((blog) => {
     const matchTitle = blog.title.toLowerCase().includes(filters.search.toLowerCase());
