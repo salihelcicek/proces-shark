@@ -43,7 +43,7 @@ export default function UserProfilePage() {
     };
 
     fetchData();
-  }, []);
+  }, [supabase]);
 
   if (!user) return <div className="p-6">Yükleniyor...</div>;
 

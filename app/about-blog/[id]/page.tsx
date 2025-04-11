@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { checkOrCreateUser } from "@/app/actionts";
 import { useParams, useRouter } from "next/navigation";
 import { deleteBlog, getBlogById } from "@/lib/db/blogs";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
 export default function BlogDetailPage() {
   const { id } = useParams();
   const blogId = Array.isArray(id) ? id[0] : id;
@@ -20,31 +21,30 @@ export default function BlogDetailPage() {
 
   const router = useRouter();
 
-const handleDelete = async () => {
-  const confirmDelete = confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
-  if (!confirmDelete) return;
+  const handleDelete = async () => {
+    const confirmDelete = confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
+    if (!confirmDelete) return;
 
-  const res = await deleteBlog(blog.id);
-  if (res?.success) {
-    toast.success("Blog başarıyla silindi!");
-    router.push("/about-blog");
-  } else {
-    toast.error("Bir hata oluştu.");
-  }
-};
+    const res = await deleteBlog(blog?.id);
+    if (res?.success) {
+      toast.success("Blog başarıyla silindi!");
+      router.push("/about-blog");
+    } else {
+      toast.error("Bir hata oluştu.");
+    }
+  };
 
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const userData = await checkOrCreateUser();
     setUser(userData);
 
     const blogData = await getBlogById(blogId);
     setBlog(blogData);
-  };
+  }, [blogId]);
 
   useEffect(() => {
     fetchData();
-  }, [blogId]);
+  }, [fetchData]);
 
   const handleLike = async () => {
     if (!user) return toast.error("Lütfen giriş yapınız.");
@@ -93,23 +93,22 @@ const handleDelete = async () => {
         <button onClick={handleDislike} className="flex items-center gap-1 hover:text-red-600">
           <ThumbsDown className="w-4 h-4" />
         </button>
-              {user?.id === blog.user_id && (
-        <div className="flex gap-2 m-5">
-          <Link href={`/about-blog/edit-blog/${blog.id}`}>
-            <Button size={"sm"}>
-            <Pencil className="w-4 h-4" />
+        {user?.id === blog.user_id && (
+          <div className="flex gap-2 m-5">
+            <Link href={`/about-blog/edit-blog/${blog.id}`}>
+              <Button size={"sm"}>
+                <Pencil className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleDelete}
+            >
+              <Trash2 className="w-4 h-4" />
             </Button>
-          </Link>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={handleDelete}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
+          </div>
+        )}
       </div>
 
       {/* Yorumlar */}

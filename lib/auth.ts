@@ -30,7 +30,7 @@ export function useUserSession() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   return { user, loading };
 }

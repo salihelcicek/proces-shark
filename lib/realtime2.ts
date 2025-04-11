@@ -8,22 +8,21 @@ export function useRealtimeUpdates(table: string, filterValue: string, filterCol
 
   useEffect(() => {
     if (!filterValue) return;
-
+  
     const fetchInitial = async () => {
       const selectFields =
         table === "comments" ? "*, users(email, profile_image)" : "*";
-    
+  
       const { data } = await supabase
         .from(table)
         .select(selectFields)
         .eq(filterColumn, filterValue);
-    
+  
       setItems(data || []);
     };
-    
-
+  
     fetchInitial();
-
+  
     const channel = supabase
       .channel(`${table}-realtime`)
       .on(
@@ -35,17 +34,20 @@ export function useRealtimeUpdates(table: string, filterValue: string, filterCol
             if (payload.eventType === "DELETE")
               return prev.filter((item) => item.id !== payload.old.id);
             if (payload.eventType === "UPDATE")
-              return prev.map((item) => (item.id === payload.new.id ? payload.new : item));
+              return prev.map((item) =>
+                item.id === payload.new.id ? payload.new : item
+              );
             return prev;
           });
         }
       )
       .subscribe();
-
+  
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [table, filterValue]);
+  }, [table, filterValue, filterColumn]); // ✅ FIXED: added filterColumn
+  
 
   return items;
 }
