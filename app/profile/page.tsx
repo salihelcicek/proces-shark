@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { User, Blog, Mission } from "@/types/types";
-
+import { useRouter } from "next/navigation";
 export default function UserProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState({
@@ -20,11 +20,16 @@ export default function UserProfilePage() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [showMoreBlogs, setShowMoreBlogs] = useState(false);
   const [showMoreMissions, setShowMoreMissions] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       const supabase = createClient();
       const user = await checkOrCreateUser();
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
       setUser(user);
 
       if (!user) return;
@@ -46,7 +51,7 @@ export default function UserProfilePage() {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   if (!user) return <div className="p-6">Yükleniyor...</div>;
 

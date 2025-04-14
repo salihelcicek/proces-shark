@@ -172,9 +172,9 @@ export default function GuidelinePage() {
 
         {/* CTA Button */}
         <div className="mt-12">
-          <Link href="/dashboard">
+          <Link href="/pricing" className="text-center">
             <Button className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 text-lg shadow-md">
-              Hemen Başla 🚀
+              Fiyatlandırmalarımıza Göz At!
             </Button>
           </Link>
         </div>

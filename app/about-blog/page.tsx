@@ -14,7 +14,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Blog, User } from "@/types/types";
 import ConfirmDialog from "@/components/ConfirmDialog";
-
+import { useRouter } from "next/navigation";
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -22,7 +22,7 @@ export default function BlogListPage() {
   const [filters, setFilters] = useState({ search: "", author: "" });
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
-
+  const router = useRouter();
   const filteredBlogs = blogs.filter((blog) => {
     const matchTitle = blog.title.toLowerCase().includes(filters.search.toLowerCase());
     const matchAuthor = filters.author ? blog.user_id === filters.author : true;
@@ -53,11 +53,15 @@ export default function BlogListPage() {
       setBlogs(blogData);
 
       const userData = await checkOrCreateUser();
+      if(!userData) {
+        router.push("/login");
+        return;
+      }
       setUser(userData);
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   return (
     <div className="min-h-screen py-16 px-4 bg-background">
