@@ -13,11 +13,15 @@ import BlogFilters from "@/components/blog/BlogFilters";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Blog, User } from "@/types/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
+
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [filters, setFilters] = useState({ search: "", author: "" });
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
 
   const filteredBlogs = blogs.filter((blog) => {
     const matchTitle = blog.title.toLowerCase().includes(filters.search.toLowerCase());
@@ -25,18 +29,23 @@ export default function BlogListPage() {
     return matchTitle && matchAuthor;
   });
 
-  const handleDelete = async (blogId: string) => {
-    const confirmDelete = window.confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
-    if (!confirmDelete) return;
-
-    const res = await deleteBlog(blogId);
+  const handleDelete = async () => {
+    if (!selectedBlogId) return;
+  
+    const res = await deleteBlog(selectedBlogId);
     if (res?.success) {
       toast.success("Blog başarıyla silindi!");
-      setBlogs((prev) => prev.filter((b) => b.id !== blogId));
+      setBlogs((prev) => prev.filter((b) => b.id !== selectedBlogId));
     } else {
       toast.error("Bir hata oluştu.");
     }
+  
+    setConfirmOpen(false);
+    setSelectedBlogId(null);
   };
+  
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,7 +135,11 @@ export default function BlogListPage() {
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleDelete(blog.id)}
+                          onClick={() => {
+                            setSelectedBlogId(blog.id);
+                            setConfirmOpen(true);
+                          }}
+                          
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -148,6 +161,19 @@ export default function BlogListPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false);
+          setSelectedBlogId(null);
+        }}
+        onConfirm={handleDelete}
+        title="Bu blogu silmek istiyor musun?"
+        description="Bu işlem geri alınamaz. Blog kalıcı olarak silinecek."
+      />
+
+
     </div>
   );
 }

@@ -8,6 +8,8 @@ import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import type { Mission } from "@/types/types";
+import { useState } from "react";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function Missions({ userId }: { userId: string }) {
   const router = useRouter();
@@ -17,20 +19,30 @@ export default function Missions({ userId }: { userId: string }) {
   
 
 
-  const handleDelete = async (missionId: string) => {
-    const confirmed = window.confirm("Bu görevi silmek istediğine emin misin?");
-    if (!confirmed) return;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // ✅ Sil butonuna tıklandığında açılacak olan modal için state
+  const handleDeleteClick = (missionId: string) => {
+    setSelectedId(missionId);
+    setConfirmOpen(true);
+  };
 
-    const { error } = await supabase.from("missions").delete().eq("id", missionId);
+  const handleConfirmDelete = async () => {
+    if (!selectedId) return;
+
+    const { error } = await supabase.from("missions").delete().eq("id", selectedId);
     if (error) {
       toast.error("Görev silinirken bir hata oluştu.");
     } else {
       toast.success("Görev başarıyla silindi!");
     }
 
-
-    
+    setConfirmOpen(false);
+    setSelectedId(null);
   };
+
+
+
   const missions = useMissionsRealtime(userId) as Mission[];
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -47,8 +59,8 @@ export default function Missions({ userId }: { userId: string }) {
                   {/* 🗑️ Sil Butonu */}
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // kart açılmasın
-                      handleDelete(mission.id);
+                      e.stopPropagation();
+                      handleDeleteClick(mission.id);
                     }}
                     className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 text-red-500"
                   >
@@ -72,6 +84,15 @@ export default function Missions({ userId }: { userId: string }) {
       ) : (
         <p className="text-center text-gray-500">Henüz bir mission eklemediniz.</p>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Bu görevi silmek istiyor musun?"
+        description="Bu işlem geri alınamaz. Silinen görev kalıcı olarak kaybolur."
+      />
+
     </div>
   );
 }

@@ -12,25 +12,24 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Blog, User } from "@/types/types";
-
+import ConfirmDialog from "@/components/ConfirmDialog";
 export default function BlogDetailPage() {
   const { id } = useParams();
   const blogId = Array.isArray(id) ? id[0] : id;
 
   const [user, setUser] = useState<User | null>(null);
   const [blog, setBlog] = useState<Blog | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
 
   const router = useRouter();
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Bu blog yazısını silmek istediğinize emin misiniz?");
-    if (!confirmDelete) return;
-
     if (!blog?.id) {
       toast.error("Blog ID bulunamadı.");
       return;
     }
-
+  
     const res = await deleteBlog(blog.id);
     if (res?.success) {
       toast.success("Blog başarıyla silindi!");
@@ -38,6 +37,8 @@ export default function BlogDetailPage() {
     } else {
       toast.error("Bir hata oluştu.");
     }
+  
+    setConfirmOpen(false); // modal kapat
   };
 
   const fetchData = useCallback(async () => {
@@ -115,16 +116,27 @@ export default function BlogDetailPage() {
             <Button
               size="sm"
               variant="destructive"
-              onClick={handleDelete}
+              onClick={() => setConfirmOpen(true)}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
+
           </div>
         )}
       </div>
 
       {/* Yorumlar */}
       {user && blogId && <CommentSection blogId={blogId} user={user} />}
+
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Bu blogu silmek istiyor musun?"
+        description="Bu işlem geri alınamaz. Blog kalıcı olarak silinecek."
+      />
+
     </div>
   );
 }

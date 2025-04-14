@@ -14,19 +14,18 @@ import { Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { enrichCommentsWithUsers } from "@/lib/helpers/enrichComments";
 import type { Comment } from "@/types/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
-// Simplified user type for comments display
+// Types
 interface CommentUser {
   email: string;
   profile_image: string | null;
 }
 
-// Combined type for comments with user data
 interface EnrichedComment extends Comment {
   user?: CommentUser;
 }
 
-// Minimal type for auth user with just the properties we need
 interface AuthUser {
   id: string;
   email?: string;
@@ -37,28 +36,19 @@ interface CommentSectionProps {
   user: AuthUser;
 }
 
-interface CommentCardProps {
-  comment: EnrichedComment;
-  user: AuthUser;
-  onEdit: (id: string, text: string) => void;
-  onDelete: (id: string) => Promise<void>;
-  onReply?: (id: string) => void;
-  isReply?: boolean;
-}
-
 export default function CommentSection({ blogId, user }: CommentSectionProps) {
   const [commentText, setCommentText] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [comments, setComments] = useState<EnrichedComment[]>([]);
   const [replyTo, setReplyTo] = useState<string | null>(null);
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null); // ✅ Typed ref
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const liveComments = useRealtimeUpdates<Comment>("comments", blogId, "blog_id");
 
   useEffect(() => {
     async function enrich() {
-      // Cast from generic type to Comment[] to satisfy type safety
       const enriched = await enrichCommentsWithUsers(liveComments as Comment[]);
       setComments(enriched);
     }
@@ -86,18 +76,17 @@ export default function CommentSection({ blogId, user }: CommentSectionProps) {
     setCommentText(text);
     textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
-  
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Yorumu silmek istediğine emin misin?")) {
-      await deleteComment(id);
-      toast.success("Yorum silindi.");
-    }
+  const handleDelete = async () => {
+    if (!confirmId) return;
+    await deleteComment(confirmId);
+    toast.success("Yorum silindi.");
+    setConfirmOpen(false);
+    setConfirmId(null);
   };
 
   const rootComments = comments.filter((c) => !c.parent_id);
-  const replies = (parentId: string) =>
-    comments.filter((c) => c.parent_id === parentId);
+  const replies = (parentId: string) => comments.filter((c) => c.parent_id === parentId);
 
   return (
     <div className="mt-10 border-t pt-6">
@@ -110,7 +99,10 @@ export default function CommentSection({ blogId, user }: CommentSectionProps) {
               comment={comment}
               user={user}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={(id) => {
+                setConfirmOpen(true);
+                setConfirmId(id);
+              }}
               onReply={(id: string) => {
                 setReplyTo(id);
                 textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -123,9 +115,11 @@ export default function CommentSection({ blogId, user }: CommentSectionProps) {
                   comment={reply}
                   user={user}
                   onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onDelete={(id) => {
+                    setConfirmOpen(true);
+                    setConfirmId(id);
+                  }}
                   isReply
-                  onReply={undefined}
                 />
               ))}
             </div>
@@ -150,7 +144,7 @@ export default function CommentSection({ blogId, user }: CommentSectionProps) {
         )}
 
         <Textarea
-          ref={textareaRef} // ✅ Scroll buraya odaklanacak
+          ref={textareaRef}
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           placeholder="Yorumunuzu yazın..."
@@ -159,8 +153,28 @@ export default function CommentSection({ blogId, user }: CommentSectionProps) {
           {editingId ? "Yorumu Güncelle" : "Yorum Ekle"}
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false);
+          setConfirmId(null);
+        }}
+        onConfirm={handleDelete}
+        title="Yorumu silmek istiyor musun?"
+        description="Bu işlem geri alınamaz. Yorum kalıcı olarak silinecek."
+      />
     </div>
   );
+}
+
+interface CommentCardProps {
+  comment: EnrichedComment;
+  user: AuthUser;
+  onEdit: (id: string, text: string) => void;
+  onDelete: (id: string) => void;
+  onReply?: (id: string) => void;
+  isReply?: boolean;
 }
 
 function CommentCard({ comment, user, onEdit, onDelete, onReply, isReply = false }: CommentCardProps) {
