@@ -67,13 +67,12 @@ export default function Dashboard() {
     );
 
   return (
-    <div className="flex flex-col justify-center items-center gap-6 min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4 sm:px-6 md:px-10 py-10">
-
+    <div className="flex flex-col justify-center items-center gap-6 min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
       {/* Başlık */}
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center 
+      <h1 className="text-4xl md:text-5xl font-extrabold text-white text-center 
         bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-500 
         dark:from-gray-800 dark:via-gray-900 dark:to-black 
-        p-4 rounded-lg shadow-lg w-full max-w-2xl">
+        p-4 rounded-lg shadow-lg">
         Mission Dashboard 🦈
       </h1>
 
@@ -87,8 +86,7 @@ export default function Dashboard() {
       )}
 
       {/* Açıklama */}
-      <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 text-center max-w-md">
-
+      <p className="text-lg hover:underline text-gray-600 dark:text-gray-300">
         Mission seç ve çalışmaya başla! 😎
       </p>
 
