@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle, Rocket, Target, Smile, Lightbulb, HelpCircle } from "lucide-react";
+import { CheckCircle, Rocket, Target, Smile, Lightbulb, HelpCircle, NotebookPen, UserPen } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 
@@ -22,7 +22,7 @@ const steps = [
   },
   {
     title: "3. Günlük İlerlemeni Kaydet",
-    description: "Her gün görevini tamamladıkça durumu 'tamamlandı', 'atlandı' ya da 'beklemede' olarak işaretle. Anlık güncelleme yap, progress bar ile tamamlama yüzdeni arttır ve motive ol!",
+    description: "Her gün görevini tamamladıkça durumu 'tamamlandı', 'atlandı' ya da 'beklemede' olarak işaretle. Progress bar ile motivasyonunu koru!",
     icon: <CheckCircle className="w-8 h-8 text-yellow-500" />,
   },
   {
@@ -30,6 +30,16 @@ const steps = [
     description: "Yapay zekadan motivasyon ve kişisel geri bildirim alarak gelişimini analiz et! İkinci bir gözden gelişimini yorumlat.🦈",
     icon: <Smile className="w-8 h-8 text-purple-500" />,
   },
+  {
+    title: "5. Toplulukla Paylaşım Yap",
+    description: "Blog sistemini kullanarak deneyimlerini, fikirlerini veya ilerlemeni paylaş. Diğer kullanıcılarla etkileşim kur!",
+    icon: <NotebookPen className="w-8 h-8 text-orange-500" />,
+  },
+  {
+    title: "6. Profilini Görüntüle ve İstatistiklerini Takip et",
+    description: "Kendi profil sayfandan oluşturduğun görevleri, yazdığın blogları ve toplam beğeni sayını takip et. Gelişimini görselleştir, daha fazlası için motive ol!",
+    icon: <UserPen className="w-8 h-8 text-pink-500" />,
+  }
 ];
 
 const tips = [
@@ -40,6 +50,9 @@ const tips = [
   "Hedeflerini görünür bir yerde tut, motivasyonun artsın.",
   "Progress bar'ı haftada en az bir kere % artırmak hedefin olsun.",
   "Görevlerine renkli etiketler koyarak öncelik sırasına al.",
+  "Blog sistemine katkıda bulun, yazdıkça gelişirsin!",
+  "Yorum yaparak topluluğun bir parçası ol. 🤝",
+  "Blog başlıklarını etkileyici seç, daha çok okunur!",
 ];
 
 const faqs = [
@@ -60,12 +73,20 @@ const faqs = [
     a: "Evet, DeepSeek üzerinden alınan öneriler ücretsizdir ve sınırsız şekilde kullanılabilir.",
   },
   {
-    q: "Hesabımı nasıl silebilirim?",
-    a: "Şu an kullanıcı silme özelliği yok ama yakında ayarlar sayfasında sunulacak.",
-  },
-  {
     q: "Gerçek zamanlı (realtime) güncellemeler var mı?",
     a: "Evet! Görev ekleme, güncelleme ve AI analizleri gerçek zamanlı olarak anında yansıtılır.",
+  },
+  {
+    q: "Blog sisteminde ne paylaşabilirim?",
+    a: "Görevlerle ilgili deneyimlerini, motivasyonel yazılarını veya topluluğa yönelik her türlü katkıyı paylaşabilirsin.",
+  },
+  {
+    q: "Yorum sisteminde anonimlik var mı?",
+    a: "Hayır, yorumlar kullanıcı hesabınıza bağlıdır ve herkes tarafından görülebilir.",
+  },
+  {
+    q: "Blogları kimler görebilir?",
+    a: "Tüm kayıtlı kullanıcılar tüm blogları görebilir, beğeni ve yorum yapabilir.",
   },
   {
     q: "Mobil cihazlarda çalışıyor mu?",
@@ -78,8 +99,8 @@ export default function GuidelinePage() {
 
   return (
     <div className="min-h-screen py-16 px-4 bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-4xl mx-auto text-center space-y-10">
-        {/* Başlık */}
+      <div className="max-w-5xl mx-auto text-center space-y-10">
+
         <motion.h1
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -89,7 +110,6 @@ export default function GuidelinePage() {
           ProcessShark Kullanım Kılavuzu
         </motion.h1>
 
-        {/* Açıklama */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -99,7 +119,6 @@ export default function GuidelinePage() {
           Hedeflerine adım adım ulaşmak için seni yönlendirecek basit bir rehber.
         </motion.p>
 
-        {/* STEPS */}
         <div className="grid gap-6 md:grid-cols-2 justify-center">
           {steps.map((step, idx) => (
             <motion.div
@@ -119,8 +138,8 @@ export default function GuidelinePage() {
           ))}
         </div>
 
-        {/* TIPS */}
-        <div className="text-left mt-16">
+        {/* Tips */}
+        <div className="text-left mt-16 dark:bg-gray-900 p-6 rounded-lg shadow-md w-full">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-sky-600 dark:text-sky-400">
             <Lightbulb className="w-6 h-6" /> İpuçları ve Öneriler
           </h2>
@@ -170,14 +189,21 @@ export default function GuidelinePage() {
           </Accordion>
         </div>
 
-        {/* CTA Button */}
-        <div className="mt-12">
-          <Link href="/pricing" className="text-center">
+        {/* CTA Buttons */}
+        <div className="mt-12 flex flex-col items-center gap-3">
+          <Link href="/pricing">
             <Button className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 text-lg shadow-md">
               Fiyatlandırmalarımıza Göz At!
             </Button>
           </Link>
+
+          <Link href="/about-blog">
+            <Button variant="outline" className="hover:border-sky-500">
+              Bloglara Göz At
+            </Button>
+          </Link>
         </div>
+
       </div>
     </div>
   );

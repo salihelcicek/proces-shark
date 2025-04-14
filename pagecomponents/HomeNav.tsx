@@ -35,7 +35,7 @@ const Navbar5 = () => {
     {
       title: "AI-Shark 🆕",
       description: "Shark ile konuş!",
-      href: "#",
+      href: "/ai-shark",
     },
     {
       title: "Rehber",
