@@ -1,116 +1,81 @@
 "use client";
 
-import { useUserSession } from "@/lib/auth"; // Kullanıcı bilgisini almak için
-import { createClient } from "@/utils/supabase/client"; // Çıkış yapmak için
+import { useState } from "react";
+import { useUserSession } from "@/lib/auth";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
-import Image from "next/image"; 
-
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-
+import { Menu, X } from "lucide-react";
 
 const Navbar5 = () => {
-  const { user } = useUserSession(); // Kullanıcıyı kontrol et
+  const { user } = useUserSession();
   const supabase = createClient();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut(); // Oturumu kapat
-    window.location.href = "/"; // Ana sayfaya yönlendir
+    await supabase.auth.signOut();
+    window.location.href = "/";
   };
 
-  const features = [
-    {
-      title: "Dashboard",
-      description: "Missionlarını takip et",
-      href: "/dashboard",
-    },
-    {
-      title: "AI-Shark 🆕",
-      description: "Shark ile konuş!",
-      href: "/ai-shark",
-    },
-    {
-      title: "Rehber",
-      description: "Nasıl kullanılır?, Sıkça sorulan sorular, İpuçları",
-      href: "/guideline",
-    }
-    
-  ];
+
 
   return (
-    <section className="py-4 px-4">
-      <div className="container">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href={"/"} className="cursor-pointer flex items-center gap-2">
-              <Image src="/favicon.png" alt="ProcesShark Logo" width={40} height={40}></Image>
-              <span className="text-lg font-semibold">ProcesShark</span>
+    <header className="py-4 px-4 border-b bg-white dark:bg-gray-900 shadow-sm">
+      <div className="max-w-6xl mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-lg font-semibold text-white justify-items-start">ProcessShark</span>
+        </Link>
+
+        {/* Desktop Menu */}
+        <nav className="hidden lg:flex items-center gap-8">
+          <Link href="/dashboard" className="hover:text-sky-600 font-medium">Dashboard</Link>
+          <Link href="/ai-shark" className="hover:text-sky-600 font-medium">AI-Shark</Link>
+          <Link href="/about-blog" className="hover:text-sky-600 font-medium">Blog</Link>
+          <Link href="/guideline" className="hover:text-sky-600 font-medium">Rehber</Link>
+          <Link href="/pricing" className="hover:text-sky-600 font-medium">Fiyatlandırma</Link>
+        </nav>
+
+        {/* Auth */}
+        <div className="hidden lg:flex gap-4">
+          {user ? (
+            <Button variant="outline" onClick={handleLogout}>Çıkış Yap</Button>
+          ) : (
+            <Link href="/login">
+              <Button variant="default">Giriş Yap</Button>
             </Link>
-          </div>
-          <NavigationMenu className="hidden lg:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Özellikler</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[600px] grid-cols-2 p-3">
-                    {features.map((feature, index) => (
-                      <NavigationMenuLink
-                        href={feature.href}
-                        key={index}
-                        className="rounded-md p-3 transition-colors hover:bg-muted/70"
-                      >
-                        <div key={feature.title}>
-                          <p className="mb-1 font-semibold">{feature.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {feature.description}
-                          </p>
-                        </div>
-                      </NavigationMenuLink>
-                    ))}
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/about-blog"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Blog
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="/pricing"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Fiyatlandırma
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <div className="hidden items-center gap-4 lg:flex">
+          )}
+        </div>
+
+        {/* Hamburger Button - Mobile */}
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden p-2">
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden mt-4 space-y-4 px-4 animate-slide-down">
+          <div className="flex flex-col gap-4">
+          <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+          <Link href="/ai-shark" onClick={() => setMobileMenuOpen(false)}>AI-Shark</Link>
+          <Link href="/about-blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+          <Link href="/guideline" onClick={() => setMobileMenuOpen(false)}>Rehber</Link>
+          <Link href="/pricing" onClick={() => setMobileMenuOpen(false)}>Fiyatlandırma</Link>
+        </div>
+
+          <div className="border-t pt-4">
             {user ? (
-              <Button onClick={handleLogout} className="cursor-pointer">
-                Çıkış Yap
-              </Button>
+              <Button variant="outline" onClick={handleLogout} className="w-full">Çıkış Yap</Button>
             ) : (
-              <Link href="/login">
-                <Button className="cursor-pointer">Giriş Yap</Button>
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full">Giriş Yap</Button>
               </Link>
             )}
           </div>
-        </nav>
-      </div>
-    </section>
+        </div>
+      )}
+    </header>
   );
 };
 
