@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import BubbleLayer from "@/components/BubbleLayer"
 import { useRouter } from "next/navigation";
 import { checkOrCreateUser } from "../actionts";
+import {addChatMessage, getChatHistory} from "@/lib/db/chatHistory"
 export default function AISharkPage() {
   const [messages, setMessages] = useState<
     { id: number; role: "user" | "assistant"; content: string }[]
@@ -19,57 +20,69 @@ export default function AISharkPage() {
   }, [messages])
   useEffect(() => {
     const fetchData = async () => {
-
       const userData = await checkOrCreateUser();
-      if(!userData) {
+      if (!userData) {
         router.push("/login");
         return;
       }
-    };
 
+      const history = await getChatHistory(userData.id); // 🕘 geçmiş mesajları al
+      const formatted = history.map((msg, index) => ({
+        id: Date.now() + index, // Generate unique IDs using index
+        role: msg.role,
+        content: msg.content,
+        created_at: msg.created_at, // Eklenen tarih bilgisini kullan
+      }));
+      setMessages(formatted); // 💬 geçmiş mesajları ekle
+    };
+  
     fetchData();
   }, [router]);
+  
 
-const handleSend = async (text: string) => {
-  if (!text.trim()) return;
-
-  const userMessage = { id: Date.now(), role: "user" as const, content: text };
-  setMessages((prev) => [...prev, userMessage]);
-  setIsLoading(true); // ✅ Başladı
-
-  try {
-    const res = await fetch("/api/ai-shark", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: text }),
-    });
-
-    const data = await res.json();
-
-    const assistantMessage = {
-      id: Date.now() + 1,
-      role: "assistant" as const,
-      content: data.response,
-    };
-
-    setMessages((prev) => [...prev, assistantMessage]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now() + 1,
-        role: "assistant",
-        content: "⚠️ Bir hata oluştu, lütfen tekrar deneyin.",
-      },
-    ]);
-  } finally {
-    setIsLoading(false); // ✅ Bitti
-  }
+  const handleSend = async (text: string) => {
+    if (!text.trim()) return;
+  
+    const userData = await checkOrCreateUser();
+    if (!userData) return;
+  
+    setIsLoading(true);
+  
+    // Kullanıcı mesajını kaydet ve Supabase'den created_at al
+    const userMessage = await addChatMessage(userData.id, "user", text);
+    if (userMessage) {
+      setMessages((prev) => [...prev, userMessage]);
+    }
+  
+    try {
+      const res = await fetch("/api/ai-shark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text }),
+      });
+  
+      const data = await res.json();
+  
+      // AI cevabını da kaydet ve created_at al
+      const assistantMessage = await addChatMessage(userData.id, "assistant", data.response);
+      if (assistantMessage) {
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
+    } catch (error) {
+      console.error("❌ Hata:", error);
+  
+      const fallbackText = "⚠️ Bir hata oluştu, lütfen tekrar deneyin.";
+  
+      const fallbackMessage = await addChatMessage(userData.id, "assistant", fallbackText);
+      if (fallbackMessage) {
+        setMessages((prev) => [...prev, fallbackMessage]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   
-      // Hata mesajı
-};
 
   
 
