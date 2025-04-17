@@ -12,7 +12,7 @@ A productivity web app to create, track and complete personal missions (goals), 
 - ✅ Beautiful circular progress bars & dynamic mission stats
 - ✅ Realtime updates using Supabase Channels (Postgres changes)
 - ✅ Notes for each day (with word limits)
-- ⌛ AI-powered motivational feedback with DeepSeek (AI-Shark)
+- ✅ AI-powered motivational feedback with DeepSeek (AI-Shark)
 - ✅ Personal profile page (with blog + mission stats)
 - ✅ Blog system with nested comments and like/dislike support
 - ✅ Dark mode support and fully mobile responsive
