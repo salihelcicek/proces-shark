@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
         hostname: "**.googleusercontent.com",
       },
     ],
-  }
+  },
+  compiler: {
+    removeConsole: {
+      exclude: ['error'],
+    },
+  },
 };
 
 export default nextConfig;
