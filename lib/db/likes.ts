@@ -23,6 +23,7 @@ export async function likeBlog(blogId: string, userId: string) {
 }
 
 export async function dislikeBlog(blogId: string, userId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, error } = await supabase
     .from("likes")
     .upsert(
@@ -38,6 +39,5 @@ export async function dislikeBlog(blogId: string, userId: string) {
     console.error("Dislike işlemi başarısız:", error.message);
     return { error: error.message };
   }
-  console.log("Dislike eklendi:", data);
   return { success: true };
 }

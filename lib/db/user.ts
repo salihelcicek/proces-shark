@@ -4,6 +4,7 @@ export async function saveUserToDB(userId: string, email: string, profileImage: 
   const supabase = createClient();
 
   // Kullanıcı zaten kayıtlı mı kontrol et
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: existingUser, error: checkError } = await supabase
     .from("users")
     .select("id")
@@ -11,7 +12,6 @@ export async function saveUserToDB(userId: string, email: string, profileImage: 
     .single();
 
   if (existingUser) {
-    console.log("✅ Kullanıcı zaten kayıtlı:",checkError,":", existingUser.id);
     return;
   }
 
