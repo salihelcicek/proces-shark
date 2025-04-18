@@ -24,8 +24,6 @@ const MissionProgress = ({ missionId }: { missionId: string }) => {
     }
 
     setPrevProgress(progress);
-    console.log("Progress:", prevProgress, "Completed Days:", completedDays, "Total Days:", totalDays);
-    console.log("Mission Days:", missionDays);
   }, [progress, prevProgress, completedDays, totalDays, missionDays]);
 
   const fireConfetti = () => {

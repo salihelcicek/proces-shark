@@ -32,8 +32,8 @@ export function useMissionsRealtime<T = { id: string; [key: string]: unknown }>(
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "missions" }, // filter yok!
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (payload) => {
-          console.log("🔔 Mission event triggered!", payload);
           fetchData();
         }
       )

@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
 
 export async function likeBlog(blogId: string, userId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, error } = await supabase
     .from("likes")
     .upsert(
@@ -18,7 +19,6 @@ export async function likeBlog(blogId: string, userId: string) {
     console.error("Like eklenemedi:", error.message);
     return { error: error.message };
   }
-  console.log("Like eklendi:", data);
   return { success: true };
 }
 

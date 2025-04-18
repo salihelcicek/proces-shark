@@ -3,12 +3,8 @@ import { cookies } from "next/headers";
 
 export async function createClient() {
   const cookieStore = await cookies();
-  const sbAuthToken = cookieStore.get("sb-auth-token");
-
-  if (!sbAuthToken) {
-    console.warn("⚠️ Sunucu Tarafında sb-auth-token Çerezi Yok! Middleware doğru çalışıyor mu?");
-  } else {
-    console.log("✅ Sunucu Tarafında sb-auth-token Alındı:", sbAuthToken);
+  if (!cookieStore) {
+    throw new Error("Cookie store is not available");
   }
 
   return createServerClient(
@@ -18,12 +14,10 @@ export async function createClient() {
       cookies: {
         getAll() {
           const allCookies = cookieStore.getAll();
-          console.log("✅ Sunucu Tarafında Çerezler:", allCookies);
           return allCookies;
         },
         setAll(cookiesToSet) {
           try {
-            console.log("✅ Çerezler Sunucuya Set Ediliyor:", cookiesToSet);
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );

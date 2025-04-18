@@ -32,7 +32,6 @@ export async function getUserMissions(userId: string) {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  console.log("📌 Supabase'ten Çekilen Mission'lar:", data);
 
   if (error) {
     console.error("❌ Mission'lar alınırken hata oluştu:", error.message);
